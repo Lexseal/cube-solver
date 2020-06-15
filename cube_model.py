@@ -2,25 +2,25 @@ from enum import IntEnum
 
 class Facelets(IntEnum):
     '''
-                 /------------\ 
+                 -------------- 
                  | U1  U2  U3 |
                  |            |
                  | U4  U5  U6 |
                  |            |
                  | U7  U8  U9 |
-    /------------|------------|-------------------------\ 
+    -------------|------------|-------------------------- 
     | L1  L2  L3 | F1  F2  F3 | R1  R2  R3 | B1  B2  B3 |
     |            |            |            |            |
     | L4  L5  L6 | F4  F5  F6 | R4  R5  R6 | B4  B5  B6 |
     |            |            |            |            |
     | L7  L8  L9 | F7  F8  F9 | R7  R8  R9 | B7  B8  B9 |
-    \------------|------------|-------------------------/
+    -------------|------------|--------------------------
                  | D1  D2  D3 |
                  |            |
                  | D4  D5  D6 |
                  |            |
                  | D7  D8  D9 |
-                 \------------/
+                 --------------
     U for Up
     L for Left...
     '''
@@ -45,13 +45,13 @@ class Facelets(IntEnum):
 
 class Color(IntEnum):
     '''
-        /---\ 
+        ----- 
         | U |
-    /---|---|-------\ 
+    ----|---|-------- 
     | L | F | R | B |
-    \---|---|-------/
+    ----|---|--------
         | D |
-        \---/
+        -----
     U for Up Color
     L for Left Color...
     '''
@@ -62,13 +62,13 @@ class Color(IntEnum):
     D=6
 
     '''
-         /----\ 
+         ------ 
          | BL |
-    /----|----|---------\ 
+    -----|----|---------- 
     | OR | WI | RE | YE |
-    \----|----|---------/
+    -----|----|----------
          | GR |
-         \----/
+         ------
     Alternatively, use the actual color to represent a cube.
     Note that the color scheme on each cube might differ.
     B for Blue
@@ -87,36 +87,48 @@ class MoveSpace(IntEnum):
     U2 means 180* and U3 means 270* or -90*.
     '''
     U1 = 1; U2 = 2; U3 = 3
-    L1 = 1; L2 = 2; L3 = 3
-    F1 = 1; F2 = 2; F3 = 3
-    R1 = 1; R2 = 2; R3 = 3
-    B1 = 1; B2 = 2; B3 = 3
-    D1 = 1; D2 = 2; D3 = 3
+    L1 = 4; L2 = 5; L3 = 6
+    F1 = 7; F2 = 8; F3 = 9
+    R1 = 10; R2 = 11; R3 = 12
+    B1 = 13; B2 = 14; B3 = 15
+    D1 = 16; D2 = 17; D3 = 18
 
 
 class Corner(IntEnum):
-    ''' Staring from upper left back, we go clockwise. '''
-    ULB = 1; URB = 2
-    ULF = 4; URF = 3
+    '''
+    Staring from upper left back.
+    Rotations are counter clockwise.
+    '''
+    BYO = 0; OBY = 8; YOB = 16
+    BRY = 1; YBR = 9; RYB = 17
+    BWR = 2; RBW = 10; WRB = 18
+    BOW = 3; WBO = 11; OWB = 19
+    
 
-    DLB = 5; DRB = 6
-    DLF = 8; DRF = 7
+    GWO = 4; OGW = 12; WOG = 20
+    GRW = 5; WGR = 13; RWG = 21
+    GYR = 6; RGY = 14; YRG = 22
+    GOY = 7; YGO = 15; OYG = 23
 
 
 class Edge(IntEnum):
-    ''' Starting from upper left, we go clockwise. '''
-    UB = 1
-    UL = 4; UR = 2
-    UF = 3
+    ''' Starting from upper left. '''
+    BY = 0; YB = 12
+    BR = 1; RB = 13
+    BW = 2; WB = 14
+    BO = 3; OB = 15
+    OY = 4; YO = 16
+    RY = 5; YR = 17
+    RW = 6; WR = 18
+    OW = 7; WO = 19
+    GW = 8; WG = 20
+    GR = 9; RG = 21
+    GY = 10; YG = 22
+    GO = 11; OG = 23
 
-    LB = 5; RB = 6
-    LF = 8; RF = 7
 
-    DB = 9
-    DL = 12; DR = 10
-    DF = 11
-
-
+import sys
 # unit testing
 if __name__ == "__main__":
-    pass
+    a = Edge.YB
+    print(a)
