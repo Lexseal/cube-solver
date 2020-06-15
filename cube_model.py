@@ -86,12 +86,12 @@ class MoveSpace(IntEnum):
     U1 means rotate upper face by 90* clockwise.
     U2 means 180* and U3 means 270* or -90*.
     '''
-    U1 = 1; U2 = 2; U3 = 3
-    L1 = 4; L2 = 5; L3 = 6
-    F1 = 7; F2 = 8; F3 = 9
-    R1 = 10; R2 = 11; R3 = 12
-    B1 = 13; B2 = 14; B3 = 15
-    D1 = 16; D2 = 17; D3 = 18
+    U1 = 0; U2 = 1; U3 = 2
+    L1 = 3; L2 = 4; L3 = 5
+    F1 = 6; F2 = 7; F3 = 8
+    R1 = 9; R2 = 10; R3 = 11
+    B1 = 12; B2 = 13; B3 = 14
+    D1 = 15; D2 = 16; D3 = 17
 
 
 class Corner(IntEnum):

@@ -1,5 +1,4 @@
-from cube_model import Corner as Cn
-from cube_model import Edge as Eg
+from cube_model import MoveSpace as MS
 
 class Cube:
 
@@ -43,7 +42,6 @@ class Cube:
     def u3(self):
         self.permute(self.corners, 3, 2, 1, 0)
         self.permute(self.edges, 3, 2, 1, 0)
-
 
     def d1(self):
         '''
@@ -131,13 +129,119 @@ class Cube:
         self.flipEdge(9)
         self.flipEdge(6)
 
+    def f1(self):
+        '''
+        2 5 4 3
+        2 6 8 7
+        '''
+        self.permute(self.corners, 2, 5, 4, 3)
+        self.permute(self.edges, 2, 6, 8, 7)
+        self.rotateCorner(2, 2)
+        self.rotateCorner(5, 1)
+        self.rotateCorner(4, 2)
+        self.rotateCorner(3, 1)
+        self.flipEdge(2)
+        self.flipEdge(6)
+        self.flipEdge(8)
+        self.flipEdge(7)
+
+    def f2(self):
+        self.swap(self.corners, 2, 4)
+        self.swap(self.corners, 5, 3)
+        self.swap(self.edges, 2, 8)
+        self.swap(self.edges, 6, 7)
+
+    def f3(self):
+        self.permute(self.corners, 3, 4, 5, 2)
+        self.permute(self.edges, 7, 8, 6, 2)
+        self.rotateCorner(2, 2)
+        self.rotateCorner(5, 1)
+        self.rotateCorner(4, 2)
+        self.rotateCorner(3, 1)
+        self.flipEdge(2)
+        self.flipEdge(6)
+        self.flipEdge(8)
+        self.flipEdge(7)
+
+    def b1(self):
+        '''
+        0 7 6 1
+        0 4 10 5
+        '''
+        self.permute(self.corners, 0, 7, 6, 1)
+        self.permute(self.edges, 0, 4, 10, 5)
+        self.rotateCorner(0, 1)
+        self.rotateCorner(7, 2)
+        self.rotateCorner(6, 1)
+        self.rotateCorner(1, 2)
+        self.flipEdge(0)
+        self.flipEdge(4)
+        self.flipEdge(10)
+        self.flipEdge(5)
+
+    def b2(self):
+        self.swap(self.corners, 0, 6)
+        self.swap(self.corners, 7, 1)
+        self.swap(self.edges, 0, 10)
+        self.swap(self.edges, 4, 5)
+
+    def b3(self):
+        self.permute(self.corners, 1, 6, 7, 0)
+        self.permute(self.edges, 5, 10, 4, 0)
+        self.rotateCorner(0, 1)
+        self.rotateCorner(7, 2)
+        self.rotateCorner(6, 1)
+        self.rotateCorner(1, 2)
+        self.flipEdge(0)
+        self.flipEdge(4)
+        self.flipEdge(10)
+        self.flipEdge(5)
+
+    def move(self, command):
+        if command == MS.U1:
+            self.u1()
+        elif command == MS.U2:
+            self.u2()
+        elif command == MS.U3:
+            self.u3()
+        elif command == MS.L1:
+            self.l1()
+        elif command == MS.L2:
+            self.l2()
+        elif command == MS.L3:
+            self.l3()
+        elif command == MS.F1:
+            self.f1()
+        elif command == MS.F2:
+            self.f2()
+        elif command == MS.F3:
+            self.f3()
+        elif command == MS.R1:
+            self.r1()
+        elif command == MS.R2:
+            self.r2()
+        elif command == MS.R3:
+            self.r3()
+        elif command == MS.B1:
+            self.b1()
+        elif command == MS.B2:
+            self.b2()
+        elif command == MS.B3:
+            self.b3()
+        elif command == MS.D1:
+            self.d1()
+        elif command == MS.D2:
+            self.d2()
+        elif command == MS.D3:
+            self.d3()
+
 
 if __name__ == "__main__":
     cube = Cube()
     print(cube.corners, cube.edges)
     for i in range(6):
-        cube.r3()
-        cube.u1()
-        cube.r1()
-        cube.u3()
+        cube.move(MS.R3)
+        cube.move(MS.U1)
+        cube.move(MS.R1)
+        cube.move(MS.U3)
         print(cube.corners, cube.edges)
