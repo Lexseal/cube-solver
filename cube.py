@@ -4,6 +4,8 @@ class Cube:
 
     corners = list(range(8))
     edges = list(range(12))
+    corner_table = []
+    edge_table = []
 
     def swap(self, arr, idx1, idx2):
         tmp = arr[idx1]
@@ -11,13 +13,11 @@ class Cube:
         arr[idx2] = tmp
 
     def permute(self, arr, idx1, idx2, idx3, idx4):
-        list = [idx4, idx3, idx2, idx1]
-        lastIdx = list[0]
-        tmp = arr[lastIdx]
-        for i in list[1:]:
-            arr[lastIdx] = arr[i]
-            lastIdx = i
-        arr[lastIdx] = tmp
+        tmp = arr[idx4]
+        arr[idx4] = arr[idx3]
+        arr[idx3] = arr[idx2]
+        arr[idx2] = arr[idx1]
+        arr[idx1] = tmp
 
     def rotateCorner(self, idx, stops):
         self.corners[idx] = (self.corners[idx]+stops*8)%24
@@ -236,12 +236,23 @@ class Cube:
             self.d3()
 
 
+import random
+import time
 if __name__ == "__main__":
     cube = Cube()
+    moves = []
+    start_time = time.time()
+    for i in range(1000000):
+        new_move = random.randrange(0, 18)
+        cube.move(new_move)
+        moves.append(new_move)
     print(cube.corners, cube.edges)
-    for i in range(6):
-        cube.move(MS.R3)
-        cube.move(MS.U1)
-        cube.move(MS.R1)
-        cube.move(MS.U3)
-        print(cube.corners, cube.edges)
+
+    for move in reversed(moves):
+        if move in [0, 3, 6, 9, 12, 15]:
+            move += 2
+        elif move in [2, 5, 8, 11, 14, 17]:
+            move -= 2
+        cube.move(move)
+    print(cube.corners, cube.edges)
+    print(time.time()-start_time)
