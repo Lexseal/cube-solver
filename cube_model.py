@@ -99,36 +99,62 @@ class Corner(IntEnum):
     Staring from upper left back.
     Rotations are counter clockwise.
     '''
-    BYO = 0; OBY = 8; YOB = 16
-    BRY = 1; YBR = 9; RYB = 17
-    BWR = 2; RBW = 10; WRB = 18
-    BOW = 3; WBO = 11; OWB = 19
+    UBL = 0; LUB = 8; BLU = 16
+    URB = 1; BUR = 9; RBU = 17
+    UFR = 2; RUF = 10; FRU = 18
+    ULF = 3; FUL = 11; LFU = 19
     
 
-    GWO = 4; OGW = 12; WOG = 20
-    GRW = 5; WGR = 13; RWG = 21
-    GYR = 6; RGY = 14; YRG = 22
-    GOY = 7; YGO = 15; OYG = 23
+    DFL = 4; LDF = 12; FLD = 20
+    DRF = 5; FDR = 13; RFD = 21
+    DBR = 6; RDB = 14; BRD = 22
+    DLB = 7; BDL = 15; LBD = 23
 
 
 class Edge(IntEnum):
     ''' Starting from upper left. '''
-    BY = 0; YB = 12
-    BR = 1; RB = 13
-    BW = 2; WB = 14
-    BO = 3; OB = 15
-    OY = 4; YO = 16
-    RY = 5; YR = 17
-    RW = 6; WR = 18
-    OW = 7; WO = 19
-    GW = 8; WG = 20
-    GR = 9; RG = 21
-    GY = 10; YG = 22
-    GO = 11; OG = 23
+    UB = 0; BU = 12
+    UR = 1; RU = 13
+    UF = 2; FU = 14
+    UL = 3; LU = 15
+    LB = 4; BL = 16
+    RB = 5; BR = 17
+    RF = 6; FR = 18
+    LF = 7; FL = 19
+    DF = 8; FD = 20
+    DR = 9; RD = 21
+    DB = 10; BD = 22
+    DL = 11; LD = 23
+
+
+class CornerColor(IntEnum): 
+    BYO = 0
+    BRY = 1
+    BWR = 2
+    BOW = 3
+    GWO = 4
+    GRW = 5
+    GYR = 6
+    GOY = 7
+
+
+class EdgeColor(IntEnum):
+    BY = 0
+    BR = 1
+    BW = 2
+    BO = 3
+    OY = 4
+    RY = 5
+    RW = 6
+    OW = 7
+    GW = 8
+    GR = 9
+    GY = 10
+    GO = 11
 
 
 import sys
 # unit testing
 if __name__ == "__main__":
-    a = Edge.YB
+    a = Edge.UB
     print(a)
