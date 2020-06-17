@@ -1,12 +1,21 @@
 import numpy as np
+import os.path
+import random
+import time
 from cube_model import MoveSpace as MS
+from calc_move_table import MoveTable
 
 class Cube:
-
     def __init__(self, corners = list(range(8)), edges = list(range(12))):
         ''' Default position is solved, but can be changed to anything. '''
         self.corners = corners
         self.edges = edges
+
+        # make a move table if it doesn't exist
+        if not os.path.exists("move_table_corner.npy") or not os.path.exists("move_table_edge.npy"):
+            move_table = MoveTable()
+            move_table.make_table()
+
         self.corner_table = np.load("move_table_corner.npy").tolist()
         self.edge_table = np.load("move_table_edge.npy").tolist()
 
@@ -35,8 +44,12 @@ class Cube:
         self.edges[10] = et[self.edges[10]]
         self.edges[11] = et[self.edges[11]]
 
-import random
-import time
+    def shuffle(self, N):
+        for _ in range(N):
+            rand_move = random.randrange(len(MS))
+            self.move(rand_move)
+
+
 def random_client(N):
     cube = Cube()
     moves = []

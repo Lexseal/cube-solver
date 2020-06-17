@@ -3,8 +3,7 @@ import random
 import time
 from cube_model import MoveSpace as MS
 
-class Cube:
-
+class MoveTable:
     def __init__(self, corners = list(range(8)), edges = list(range(12))):
         ''' Default position is solved, but can be changed to anything. '''
         self.corners = corners
@@ -293,7 +292,7 @@ class Cube:
 
 
 def random_client(N):
-    cube = Cube()
+    cube = MoveTable()
     moves = []
     start_time = time.time()
     for _ in range(N):
