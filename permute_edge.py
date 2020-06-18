@@ -8,7 +8,7 @@ from rank import rank_corners
 
 cube = Cube()
 queue = SimpleQueue()
-corner_table = [-1]*88179840
+corner_table = bytearray([-1]*88179840)
 
 queue.put(cube.corners)
 corner_table[0] = 0 # first entry is solved

@@ -4,7 +4,7 @@ import time
 from cube_model import MoveSpace as MS
 
 class MoveTable:
-    def __init__(self, corners = list(range(8)), edges = list(range(12))):
+    def __init__(self, corners = bytearray(range(8)), edges = bytearray(range(12))):
         ''' Default position is solved, but can be changed to anything. '''
         self.corners = corners
         self.edges = edges

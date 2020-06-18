@@ -6,7 +6,7 @@ from cube_model import MoveSpace as MS
 from calc_move_table import MoveTable
 
 class Cube:
-    def __init__(self, corners = list(range(8)), edges = list(range(12))):
+    def __init__(self, corners = bytearray(range(8)), edges = bytearray(range(12))):
         ''' Default position is solved, but can be changed to anything. '''
         self.corners = corners
 
@@ -94,5 +94,5 @@ def random_client(N):
     print("After reversing, the entire operation took", round(time.time()-start_time, 2), "seconds")
 
 if __name__ == "__main__":
-    random_client(10000000)
+    random_client(1000000)
     pass
