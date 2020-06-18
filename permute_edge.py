@@ -21,7 +21,10 @@ while queue.qsize() != 0:
 
     last_move = -999
     for move in MS:
-        if move//3 == last_move//3: continue
+        if move == last_move or \
+            move//3 == last_move//3 and \
+            abs(move-last_move) == 2:
+           continue
         last_move = move
 
         next_state = cube.move_corners(cur_state, move)
@@ -35,6 +38,6 @@ while queue.qsize() != 0:
 
     if (n-last_print > 100000):
         last_print = n
-        print(n, queue.qsize(), round(time()-start_time, 2))
+        print(n, queue.qsize(), move_count, round(time()-start_time, 2))
 
 np.save("corner_table", np.array(corner_table, dtype=np.int8))
