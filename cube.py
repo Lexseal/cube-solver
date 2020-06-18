@@ -1,7 +1,8 @@
 import numpy as np
 import os.path
 import random
-import time
+from sys import getsizeof
+from time import time
 from cube_model import MoveSpace as MS
 from calc_move_table import MoveTable
 
@@ -25,18 +26,32 @@ class Cube:
 
     def move_corners(self, corners, move):
         ct = self.corner_table[move]
-        return ct[corners[0]], ct[corners[1]], ct[corners[2]], ct[corners[3]], \
-               ct[corners[4]], ct[corners[5]], ct[corners[6]], ct[corners[7]]
+        corners[0] = ct[corners[0]]
+        corners[1] = ct[corners[1]]
+        corners[2] = ct[corners[2]]
+        corners[3] = ct[corners[3]]
+        corners[4] = ct[corners[4]]
+        corners[5] = ct[corners[5]]
+        corners[6] = ct[corners[6]]
+        corners[7] = ct[corners[7]]
 
     def move_edges1(self, edges1, move):
         et = self.edge_table[move]
-        return et[edges1[0]], et[edges1[1]], et[edges1[2]], \
-               et[edges1[3]], et[edges1[4]], et[edges1[5]]
+        edges1[0] = et[edges1[0]]
+        edges1[1] = et[edges1[1]]
+        edges1[2] = et[edges1[2]]
+        edges1[3] = et[edges1[3]]
+        edges1[4] = et[edges1[4]]
+        edges1[5] = et[edges1[5]]
 
     def move_edges2(self, edges2, move):
         et = self.edge_table[move]
-        return et[edges2[0]], et[edges2[1]], et[edges2[2]], \
-               et[edges2[3]], et[edges2[4]], et[edges2[5]]
+        edges2[0] = et[edges2[0]]
+        edges2[1] = et[edges2[1]]
+        edges2[2] = et[edges2[2]]
+        edges2[3] = et[edges2[3]]
+        edges2[4] = et[edges2[4]]
+        edges2[5] = et[edges2[5]]
 
 
     def move(self, move):
@@ -74,7 +89,7 @@ class Cube:
 def random_client(N):
     cube = Cube()
     moves = []
-    start_time = time.time()
+    start_time = time()
     for _ in range(N):
         new_move = random.randrange(0, 18)
         #new_move = random.sample([0, 1, 2, 3, 4, 5, 6, 7, 8, 17], 1)[0]
@@ -82,7 +97,7 @@ def random_client(N):
         moves.append(new_move)
     print(cube.corners, cube.edges1, cube.edges2)
     
-    print(N, "random moves took", round(time.time()-start_time, 2), "seconds")
+    print(N, "random moves took", round(time()-start_time, 2), "seconds")
 
     for move in reversed(moves):
         if move in [0, 3, 6, 9, 12, 15]:
@@ -91,8 +106,15 @@ def random_client(N):
             move -= 2
         cube.move(move)
     print(cube.corners, cube.edges1, cube.edges2)
-    print("After reversing, the entire operation took", round(time.time()-start_time, 2), "seconds")
+    print("After reversing, the entire operation took", round(time()-start_time, 2), "seconds")
 
 if __name__ == "__main__":
-    random_client(1000000)
+    #random_client(1000000)
+    start_time = time()
+    cube = Cube()
+    arr = bytearray(range(8))
+    for i in range(10000000):
+        arr_copy = arr.copy()
+        cube.move_corners(arr_copy, 8)
+    print(time()-start_time)
     pass

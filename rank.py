@@ -22,6 +22,15 @@ def rank_corners(pos):
                             pos[5]//8*3 + \
                                 pos[6]//8
 
+def rank_edges(pos):
+    '''
+    pos should contain 6 distinct numbers from 0 to 11
+    '''
+    pass
+    #a0 = 55440*pos[0]
+    
+
+
 if __name__ == "__main__":
     start_time = time()
     arr = np.zeros(100000000)
