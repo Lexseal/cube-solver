@@ -1,11 +1,9 @@
 import numpy as np
 import os.path
 import random
-from sys import getsizeof
 from time import time
 from cube_model import MoveSpace as MS
 from calc_move_table import MoveTable
-from rank import rank_corners, rank_edges
 
 class Cube:
     def __init__(self, corners = bytearray(range(8)), edges = bytearray(range(12))):
@@ -81,12 +79,9 @@ class Cube:
         self.edges2[5] = et[self.edges2[5]]
 
     def shuffle(self, N):
-        arr = bytearray([False]*88179840)
         for _ in range(N):
             rand_move = random.randrange(len(MS))
             self.move(rand_move)
-            arr[rank_corners(self.corners)] = True
-        return arr
 
 
 def random_client(N):
@@ -98,8 +93,7 @@ def random_client(N):
         #new_move = random.sample([0, 1, 2, 3, 4, 5, 6, 7, 8, 17], 1)[0]
         cube.move(new_move)
         moves.append(new_move)
-    print(cube.corners, cube.edges1, cube.edges2)
-    
+    print(list(cube.corners), list(cube.edges1), list(cube.edges2))
     print(N, "random moves took", round(time()-start_time, 2), "seconds")
 
     for move in reversed(moves):
@@ -108,42 +102,9 @@ def random_client(N):
         elif move in [2, 5, 8, 11, 14, 17]:
             move -= 2
         cube.move(move)
-    print(cube.corners, cube.edges1, cube.edges2)
+    print(list(cube.corners), list(cube.edges1), list(cube.edges2))
     print("After reversing, the entire operation took", round(time()-start_time, 2), "seconds")
 
 if __name__ == "__main__":
-    #random_client(1000000)
-    cube = Cube()
-    bool_arr = cube.shuffle(20000000)
-    count = 0
-    for itm in bool_arr:
-        if itm == True:
-            count+=1
-    print(count)
-    '''cube.move(MS.L1)
-    cube.move(MS.D3)
-    cube.move(MS.L1)
-    cube.move(MS.D1)
-    cube.move(MS.L1)
-    cube.move(MS.D1)
-    cube.move(MS.L1)
-    cube.move(MS.D3)
-    cube.move(MS.L3)
-    cube.move(MS.D3)
-    cube.move(MS.L2)
-    print(list(cube.edges1), list(cube.edges2))'''
-    '''for _ in range(6):
-        cube.move_edges1(cube.edges1, MS.L3)
-        cube.move_edges1(cube.edges1, MS.D3)
-        cube.move_edges1(cube.edges1, MS.B3)
-        cube.move_edges1(cube.edges1, MS.D1)
-        cube.move_edges1(cube.edges1, MS.B1)
-        cube.move_edges1(cube.edges1, MS.L1)
-        cube.move_edges2(cube.edges2, MS.L3)
-        cube.move_edges2(cube.edges2, MS.D3)
-        cube.move_edges2(cube.edges2, MS.B3)
-        cube.move_edges2(cube.edges2, MS.D1)
-        cube.move_edges2(cube.edges2, MS.B1)
-        cube.move_edges2(cube.edges2, MS.L1)
-        print(list(cube.edges1), list(cube.edges2))'''
+    #random_client(1000)
     pass

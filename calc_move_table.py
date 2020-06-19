@@ -2,6 +2,7 @@ import numpy as np
 import random
 import time
 from cube_model import MoveSpace as MS
+from rank import rank_edges
 
 class MoveTable:
     def __init__(self, corners = bytearray(range(8)), edges = bytearray(range(12))):
@@ -143,10 +144,6 @@ class MoveTable:
         self.rotateCorner(5, 1)
         self.rotateCorner(4, 2)
         self.rotateCorner(3, 1)
-        self.flipEdge(2)
-        self.flipEdge(6)
-        self.flipEdge(8)
-        self.flipEdge(7)
 
     def f2(self):
         self.swap(self.corners, 2, 4)
@@ -161,10 +158,6 @@ class MoveTable:
         self.rotateCorner(5, 1)
         self.rotateCorner(4, 2)
         self.rotateCorner(3, 1)
-        self.flipEdge(2)
-        self.flipEdge(6)
-        self.flipEdge(8)
-        self.flipEdge(7)
 
     def b1(self):
         '''
@@ -177,10 +170,6 @@ class MoveTable:
         self.rotateCorner(7, 2)
         self.rotateCorner(6, 1)
         self.rotateCorner(1, 2)
-        self.flipEdge(0)
-        self.flipEdge(4)
-        self.flipEdge(10)
-        self.flipEdge(5)
 
     def b2(self):
         self.swap(self.corners, 0, 6)
@@ -195,10 +184,6 @@ class MoveTable:
         self.rotateCorner(7, 2)
         self.rotateCorner(6, 1)
         self.rotateCorner(1, 2)
-        self.flipEdge(0)
-        self.flipEdge(4)
-        self.flipEdge(10)
-        self.flipEdge(5)
 
     def move(self, command):
         if command == MS.U1:
@@ -290,6 +275,10 @@ class MoveTable:
         np.save("move_table_corner", corner_table)
         np.save("move_table_edge", edge_table)
 
+    def shuffle(self, N):
+        for _ in range(N):
+            rand_move = random.randrange(len(MS))
+            self.move(rand_move)
 
 def random_client(N):
     cube = MoveTable()
@@ -300,7 +289,7 @@ def random_client(N):
         #new_move = random.sample([0, 1, 2, 3, 4, 5, 6, 7, 8, 17], 1)[0]
         cube.move(new_move)
         moves.append(new_move)
-    print(cube.corners, cube.edges)
+    print(list(cube.corners), list(cube.edges))
     
     print(N, "random moves took", round(time.time()-start_time, 2), "seconds")
 
@@ -314,5 +303,6 @@ def random_client(N):
     print("After reversing, the entire operation took", round(time.time()-start_time, 2), "seconds")
 
 if __name__ == "__main__":
-    random_client(1000000)
+    #cube = MoveTable()
+    #cube.make_table()
     pass
