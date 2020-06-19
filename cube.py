@@ -5,6 +5,7 @@ from sys import getsizeof
 from time import time
 from cube_model import MoveSpace as MS
 from calc_move_table import MoveTable
+from rank import rank_corners, rank_edges
 
 class Cube:
     def __init__(self, corners = bytearray(range(8)), edges = bytearray(range(12))):
@@ -53,7 +54,6 @@ class Cube:
         edges2[4] = et[edges2[4]]
         edges2[5] = et[edges2[5]]
 
-
     def move(self, move):
         ct = self.corner_table[move]
         self.corners[0] = ct[self.corners[0]]
@@ -81,9 +81,12 @@ class Cube:
         self.edges2[5] = et[self.edges2[5]]
 
     def shuffle(self, N):
+        arr = bytearray([False]*88179840)
         for _ in range(N):
             rand_move = random.randrange(len(MS))
             self.move(rand_move)
+            arr[rank_corners(self.corners)] = True
+        return arr
 
 
 def random_client(N):
@@ -110,11 +113,37 @@ def random_client(N):
 
 if __name__ == "__main__":
     #random_client(1000000)
-    start_time = time()
     cube = Cube()
-    arr = bytearray(range(8))
-    for i in range(10000000):
-        arr_copy = arr.copy()
-        cube.move_corners(arr_copy, 8)
-    print(time()-start_time)
+    bool_arr = cube.shuffle(20000000)
+    count = 0
+    for itm in bool_arr:
+        if itm == True:
+            count+=1
+    print(count)
+    '''cube.move(MS.L1)
+    cube.move(MS.D3)
+    cube.move(MS.L1)
+    cube.move(MS.D1)
+    cube.move(MS.L1)
+    cube.move(MS.D1)
+    cube.move(MS.L1)
+    cube.move(MS.D3)
+    cube.move(MS.L3)
+    cube.move(MS.D3)
+    cube.move(MS.L2)
+    print(list(cube.edges1), list(cube.edges2))'''
+    '''for _ in range(6):
+        cube.move_edges1(cube.edges1, MS.L3)
+        cube.move_edges1(cube.edges1, MS.D3)
+        cube.move_edges1(cube.edges1, MS.B3)
+        cube.move_edges1(cube.edges1, MS.D1)
+        cube.move_edges1(cube.edges1, MS.B1)
+        cube.move_edges1(cube.edges1, MS.L1)
+        cube.move_edges2(cube.edges2, MS.L3)
+        cube.move_edges2(cube.edges2, MS.D3)
+        cube.move_edges2(cube.edges2, MS.B3)
+        cube.move_edges2(cube.edges2, MS.D1)
+        cube.move_edges2(cube.edges2, MS.B1)
+        cube.move_edges2(cube.edges2, MS.L1)
+        print(list(cube.edges1), list(cube.edges2))'''
     pass

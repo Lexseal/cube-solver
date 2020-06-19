@@ -1,7 +1,10 @@
 from time import time
 import sys
+import numpy as np
 
 start_time = time()
-for i in range(1000000):
-    arr = list(range(min(256, i)))
+arr = np.load("edge_table2.npy")
+for i, itm in enumerate(arr):
+    if i < 10000 and itm != 10:
+        print(i, itm)
 print(time()-start_time)
