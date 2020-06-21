@@ -79,9 +79,12 @@ class Cube:
         self.edges2[5] = et[self.edges2[5]]
 
     def shuffle(self, N):
+        move_list = []
         for _ in range(N):
             rand_move = random.randrange(len(MS))
             self.move(rand_move)
+            move_list.append(rand_move)
+        return move_list
 
 
 def random_client(N):

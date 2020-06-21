@@ -26,7 +26,7 @@ def calc_corner_table():
         for move in MS:
             if move == last_move or \
                 move//3 == last_move//3 and \
-                abs(move-last_move) == 2:
+                    abs(move-last_move) == 2:
                 continue
 
             next_state = cur_state.copy() # get a copy of cur state
@@ -66,7 +66,7 @@ def calc_edge_table1():
         for move in MS:
             if move == last_move or \
                 move//3 == last_move//3 and \
-                abs(move-last_move) == 2:
+                    abs(move-last_move) == 2:
                 continue
 
             next_state = cur_state.copy() # get a copy of cur state
@@ -106,7 +106,7 @@ def calc_edge_table2():
         for move in MS:
             if move == last_move or \
                 move//3 == last_move//3 and \
-                abs(move-last_move) == 2:
+                    abs(move-last_move) == 2:
                 continue
 
             next_state = cur_state.copy() # get a copy of cur state
