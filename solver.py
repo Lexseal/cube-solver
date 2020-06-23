@@ -5,8 +5,8 @@ from rank import rank_corners, rank_edges
 from cube_model import MoveSpace as MS
 
 # load move_table
-move_table_corner = np.load("move_table_corner.npy").tolist()
-move_table_edge = np.load("move_table_edge.npy").tolist()
+move_table_corner = np.load("table/move_table_corner.npy").tolist()
+move_table_edge = np.load("table/move_table_edge.npy").tolist()
 
 def move_cube(corners, edges1, edges2, move):
         ct = move_table_corner[move]
@@ -47,9 +47,9 @@ def print_move(move):
             return
 
 # load tables
-corner_table = bytearray(np.load("corner_table.npy"))
-edge_table1 = bytearray(np.load("edge_table1.npy"))
-edge_table2 = bytearray(np.load("edge_table2.npy"))
+corner_table = bytearray(np.load("table/corner_table.npy"))
+edge_table1 = bytearray(np.load("table/edge_table1.npy"))
+edge_table2 = bytearray(np.load("table/edge_table2.npy"))
 
 # make a new solved cube
 cube = Cube()

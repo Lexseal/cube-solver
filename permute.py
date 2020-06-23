@@ -43,7 +43,7 @@ def calc_corner_table():
             last_print = n
             print(str(n//1000)+'k', str(queue.qsize()//1000)+'k', move_count, round((time()-start_time)/60, 2))
 
-    np.save("corner_table", np.array(corner_table, dtype=np.int8))
+    np.save("table/corner_table", np.array(corner_table, dtype=np.int8))
 
 def calc_edge_table1():
     cube = Cube()
@@ -83,7 +83,7 @@ def calc_edge_table1():
             last_print = n
             print(str(n//1000)+'k', str(queue.qsize()//1000)+'k', move_count, round((time()-start_time)/60, 2))
 
-    np.save("edge_table1", np.array(edge_table1, dtype=np.int8))
+    np.save("table/edge_table1", np.array(edge_table1, dtype=np.int8))
 
 def calc_edge_table2():
     cube = Cube()
@@ -123,7 +123,7 @@ def calc_edge_table2():
             last_print = n
             print(str(n//1000)+'k', str(queue.qsize()//1000)+'k', move_count, round((time()-start_time)/60, 2))
 
-    np.save("edge_table2", np.array(edge_table2, dtype=np.int8))
+    np.save("table/edge_table2", np.array(edge_table2, dtype=np.int8))
 
 if __name__ == "__main__":
     #calc_corner_table()

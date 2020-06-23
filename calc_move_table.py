@@ -272,8 +272,8 @@ class MoveTable:
 
         # save
         #print(corner_table, edge_table)
-        np.save("move_table_corner", corner_table)
-        np.save("move_table_edge", edge_table)
+        np.save("table/move_table_corner", corner_table)
+        np.save("table/move_table_edge", edge_table)
 
     def shuffle(self, N):
         for _ in range(N):

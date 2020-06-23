@@ -15,13 +15,13 @@ class Cube:
         self.edges2 = edges[6:]
 
         # make a move table if it doesn't exist
-        if not os.path.exists("move_table_corner.npy") or not os.path.exists("move_table_edge.npy"):
+        if not os.path.exists("table/move_table_corner.npy") or not os.path.exists("table/move_table_edge.npy"):
             move_table = MoveTable()
             move_table.make_table()
 
         # load move_table
-        self.corner_table = np.load("move_table_corner.npy").tolist()
-        self.edge_table = np.load("move_table_edge.npy").tolist()
+        self.corner_table = np.load("table/move_table_corner.npy").tolist()
+        self.edge_table = np.load("table/move_table_edge.npy").tolist()
 
     def move_corners(self, corners, move):
         ct = self.corner_table[move]
