@@ -41,6 +41,12 @@ def min_move(corners, edges1, edges2):
     min_edges2 = edge_table2[rank_edges(edges2)]
     return max(min_corners, min_edges1, min_edges2)
 
+def h2(corners, edges1, edges2):
+    min_corners = corner_table_h2[rank_corners(corners)]
+    min_edges1 = edge_table1_h2[rank_edges(edges1)]
+    min_edges2 = edge_table2_h2[rank_edges(edges2)]
+    return max(min_corners, min_edges1, min_edges2)
+
 def print_move(move):
     for labeled_move in MS:
         if move == labeled_move:
@@ -51,6 +57,10 @@ def print_move(move):
 corner_table = bytearray(np.load("table/corner_table.npy"))
 edge_table1 = bytearray(np.load("table/edge_table1.npy"))
 edge_table2 = bytearray(np.load("table/edge_table2.npy"))
+
+corner_table_h2 = bytearray(np.load("table/corner_table_h2.npy"))
+edge_table1_h2 = bytearray(np.load("table/edge_table1_h2.npy"))
+edge_table2_h2 = bytearray(np.load("table/edge_table2_h2.npy"))
 
 # make a new solved cube
 cube = Cube()
@@ -146,6 +156,7 @@ for max_depth in range(0, 12):
     if first_phase_complete: break
     print("level", max_depth, "done")
 
+
 print("second phased started")
 cube.corners[9] = 0 # takes 0 moves to get there
 for max_depth in range(0, 18):
@@ -198,7 +209,7 @@ for max_depth in range(0, 18):
                 move_cube(new_corners, new_edges1, new_edges2, move)
 
                 # add if within the search range
-                if depth + min_move(new_corners, new_edges1, new_edges2) <= max_depth:
+                if depth + h2(new_corners, new_edges1, new_edges2) <= max_depth:
                     corner_stack.append(new_corners)
                     edge1_stack.append(new_edges1)
                     edge2_stack.append(new_edges2)

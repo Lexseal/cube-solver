@@ -2,6 +2,7 @@ from queue import SimpleQueue
 import numpy as np
 from time import time
 from cube_model import MoveSpace as MS
+from cube_model import G1Space
 from cube import Cube
 from rank import rank_corners, rank_edges
 
@@ -23,6 +24,7 @@ def calc_corner_table():
         move_count = corner_table[rank_corners(cur_state)] # get the move count up to this state
 
         last_move = cur_state[8]
+<<<<<<< HEAD
         for move in MS:
             cur_face = move//3
             last_face = last_move//3
@@ -30,6 +32,13 @@ def calc_corner_table():
             elif cur_face == 3 and last_face == 1: continue
             elif cur_face == 4 and last_face == 2: continue
             elif cur_face == 5 and last_face == 0: continue
+=======
+        for move in G1Space:
+            if move == last_move or \
+                move//3 == last_move//3 and \
+                    abs(move-last_move) == 2:
+                continue
+>>>>>>> implemented a correct h2 database, but not space efficient
 
             next_state = cur_state.copy() # get a copy of cur state
             cube.move_corners(next_state, move) # compute next state
@@ -45,7 +54,7 @@ def calc_corner_table():
             last_print = n
             print(str(n//1000)+'k', str(queue.qsize()//1000)+'k', move_count, round((time()-start_time)/60, 2))
 
-    np.save("table/corner_table", np.array(corner_table, dtype=np.int8))
+    np.save("table/corner_table_h2", np.array(corner_table, dtype=np.int8))
 
 def calc_edge_table1():
     cube = Cube()
@@ -65,6 +74,7 @@ def calc_edge_table1():
         move_count = edge_table1[rank_edges(cur_state)] # get the move count up to this state
 
         last_move = cur_state[6]
+<<<<<<< HEAD
         for move in MS:
             cur_face = move//3
             last_face = last_move//3
@@ -72,6 +82,13 @@ def calc_edge_table1():
             elif cur_face == 3 and last_face == 1: continue
             elif cur_face == 4 and last_face == 2: continue
             elif cur_face == 5 and last_face == 0: continue
+=======
+        for move in G1Space:
+            if move == last_move or \
+                move//3 == last_move//3 and \
+                    abs(move-last_move) == 2:
+                continue
+>>>>>>> implemented a correct h2 database, but not space efficient
 
             next_state = cur_state.copy() # get a copy of cur state
             cube.move_edges1(next_state, move) # compute next state
@@ -87,7 +104,7 @@ def calc_edge_table1():
             last_print = n
             print(str(n//1000)+'k', str(queue.qsize()//1000)+'k', move_count, round((time()-start_time)/60, 2))
 
-    np.save("table/edge_table1", np.array(edge_table1, dtype=np.int8))
+    np.save("table/edge_table1_h2", np.array(edge_table1, dtype=np.int8))
 
 def calc_edge_table2():
     cube = Cube()
@@ -107,6 +124,7 @@ def calc_edge_table2():
         move_count = edge_table2[rank_edges(cur_state)] # get the move count up to this state
 
         last_move = cur_state[6]
+<<<<<<< HEAD
         for move in MS:
             cur_face = move//3
             last_face = last_move//3
@@ -114,6 +132,13 @@ def calc_edge_table2():
             elif cur_face == 3 and last_face == 1: continue
             elif cur_face == 4 and last_face == 2: continue
             elif cur_face == 5 and last_face == 0: continue
+=======
+        for move in G1Space:
+            if move == last_move or \
+                move//3 == last_move//3 and \
+                    abs(move-last_move) == 2:
+                continue
+>>>>>>> implemented a correct h2 database, but not space efficient
 
             next_state = cur_state.copy() # get a copy of cur state
             cube.move_edges2(next_state, move) # compute next state
@@ -128,11 +153,20 @@ def calc_edge_table2():
         if (n-last_print > 100000):
             last_print = n
             print(str(n//1000)+'k', str(queue.qsize()//1000)+'k', move_count, round((time()-start_time)/60, 2))
+<<<<<<< HEAD
     print(n)
     np.save("table/edge_table2", np.array(edge_table2, dtype=np.int8))
 
 if __name__ == "__main__":
     #calc_corner_table()
     #calc_edge_table1()
+=======
+
+    np.save("table/edge_table2_h2", np.array(edge_table2, dtype=np.int8))
+
+if __name__ == "__main__":
+    calc_corner_table()
+    calc_edge_table1()
+>>>>>>> implemented a correct h2 database, but not space efficient
     calc_edge_table2()
     pass
