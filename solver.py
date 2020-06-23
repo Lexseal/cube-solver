@@ -156,7 +156,10 @@ for max_depth in range(0, 12):
     if first_phase_complete: break
     print("level", max_depth, "done")
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7b1bdb0367cd96046a4d59379a78178c1d233add
 print("second phased started")
 cube.corners[9] = 0 # takes 0 moves to get there
 for max_depth in range(0, 18):
