@@ -3,6 +3,7 @@ import os.path
 import random
 from time import time
 from cube_model import MoveSpace as MS
+from cube_model import G1Space
 from calc_move_table import MoveTable
 
 class Cube:
@@ -81,7 +82,7 @@ class Cube:
     def shuffle(self, N):
         move_list = []
         for _ in range(N):
-            rand_move = random.randrange(len(MS))
+            rand_move = random.sample(list(MS), 1)[0]
             self.move(rand_move)
             move_list.append(rand_move)
         return move_list
