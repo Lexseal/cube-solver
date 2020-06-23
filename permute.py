@@ -24,10 +24,12 @@ def calc_corner_table():
 
         last_move = cur_state[8]
         for move in MS:
-            if move == last_move or \
-                move//3 == last_move//3 and \
-                    abs(move-last_move) == 2:
-                continue
+            cur_face = move//3
+            last_face = last_move//3
+            if cur_face == last_face: continue
+            elif cur_face == 3 and last_face == 1: continue
+            elif cur_face == 4 and last_face == 2: continue
+            elif cur_face == 5 and last_face == 0: continue
 
             next_state = cur_state.copy() # get a copy of cur state
             cube.move_corners(next_state, move) # compute next state
@@ -64,10 +66,12 @@ def calc_edge_table1():
 
         last_move = cur_state[6]
         for move in MS:
-            if move == last_move or \
-                move//3 == last_move//3 and \
-                    abs(move-last_move) == 2:
-                continue
+            cur_face = move//3
+            last_face = last_move//3
+            if cur_face == last_face: continue
+            elif cur_face == 3 and last_face == 1: continue
+            elif cur_face == 4 and last_face == 2: continue
+            elif cur_face == 5 and last_face == 0: continue
 
             next_state = cur_state.copy() # get a copy of cur state
             cube.move_edges1(next_state, move) # compute next state
@@ -104,10 +108,12 @@ def calc_edge_table2():
 
         last_move = cur_state[6]
         for move in MS:
-            if move == last_move or \
-                move//3 == last_move//3 and \
-                    abs(move-last_move) == 2:
-                continue
+            cur_face = move//3
+            last_face = last_move//3
+            if cur_face == last_face: continue
+            elif cur_face == 3 and last_face == 1: continue
+            elif cur_face == 4 and last_face == 2: continue
+            elif cur_face == 5 and last_face == 0: continue
 
             next_state = cur_state.copy() # get a copy of cur state
             cube.move_edges2(next_state, move) # compute next state
@@ -122,11 +128,11 @@ def calc_edge_table2():
         if (n-last_print > 100000):
             last_print = n
             print(str(n//1000)+'k', str(queue.qsize()//1000)+'k', move_count, round((time()-start_time)/60, 2))
-
+    print(n)
     np.save("table/edge_table2", np.array(edge_table2, dtype=np.int8))
 
 if __name__ == "__main__":
     #calc_corner_table()
     #calc_edge_table1()
-    #calc_edge_table2()
+    calc_edge_table2()
     pass

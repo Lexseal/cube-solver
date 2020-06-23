@@ -55,7 +55,7 @@ edge_table2 = bytearray(np.load("table/edge_table2.npy"))
 cube = Cube()
 
 # apply some random moves
-for move in cube.shuffle(7):
+for move in cube.shuffle(12):
     print_move(move)
 
 solved_corners = bytearray(range(8))
@@ -100,10 +100,12 @@ for max_depth in range(0, 21):
                     exit(0)
         else:
             for move in MS:
-                if move == last_move or \
-                    move//3 == last_move//3 and \
-                        abs(move-last_move) == 2:
-                    continue
+                cur_face = move//3
+                last_face = last_move//3
+                if cur_face == last_face: continue
+                elif cur_face == 3 and last_face == 1: continue
+                elif cur_face == 4 and last_face == 2: continue
+                elif cur_face == 5 and last_face == 0: continue
 
                 new_corners = cur_corners.copy()
                 new_corners[8] = move
@@ -114,7 +116,7 @@ for max_depth in range(0, 21):
                 move_cube(new_corners, new_edges1, new_edges2, move)
 
                 # add if within the search range
-                if min_move(new_corners, new_edges1, new_edges2) <= max_depth:
+                if depth + min_move(new_corners, new_edges1, new_edges2) <= max_depth:
                     corner_stack.append(new_corners)
                     edge1_stack.append(new_edges1)
                     edge2_stack.append(new_edges2)
