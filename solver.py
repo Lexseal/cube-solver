@@ -2,6 +2,7 @@ import numpy as np
 from collections import deque
 from cube import Cube
 from rank import rank_corners, rank_edges
+from rank import h2_corners, h2_edges
 from cube_model import MoveSpace as MS
 from cube_model import G1Space
 
@@ -42,9 +43,9 @@ def min_move(corners, edges1, edges2):
     return max(min_corners, min_edges1, min_edges2)
 
 def h2(corners, edges1, edges2):
-    min_corners = corner_table_h2[rank_corners(corners)]
-    min_edges1 = edge_table1_h2[rank_edges(edges1)]
-    min_edges2 = edge_table2_h2[rank_edges(edges2)]
+    min_corners = corner_table_h2[h2_corners(corners)]
+    min_edges1 = edge_table1_h2[h2_edges(edges1)]
+    min_edges2 = edge_table2_h2[h2_edges(edges2)]
     return max(min_corners, min_edges1, min_edges2)
 
 def print_move(move):
@@ -216,7 +217,10 @@ for max_depth in range(0, 18):
     if first_phase_complete: break
     print("level", max_depth, "done")
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> more efficient pruning in G1 stage
 print("second phased started")
 cube.corners[9] = 0 # takes 0 moves to get there
 for max_depth in range(0, 18):
