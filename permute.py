@@ -25,24 +25,13 @@ def calc_corner_table():
         move_count = corner_table[h2_corners(cur_state)] # get the move count up to this state
 
         last_move = cur_state[8]
-<<<<<<< HEAD
-<<<<<<< HEAD
-        for move in MS:
+        for move in G1Space:
             cur_face = move//3
             last_face = last_move//3
             if cur_face == last_face: continue
             elif cur_face == 3 and last_face == 1: continue
             elif cur_face == 4 and last_face == 2: continue
             elif cur_face == 5 and last_face == 0: continue
-=======
-=======
->>>>>>> 9f8aee5ab96a00c6d0a7e1ee3b32106239dff7e3
-        for move in G1Space:
-            if move == last_move or \
-                move//3 == last_move//3 and \
-                    abs(move-last_move) == 2:
-                continue
->>>>>>> implemented a correct h2 database, but not space efficient
 
             next_state = cur_state.copy() # get a copy of cur state
             cube.move_corners(next_state, move) # compute next state
@@ -78,24 +67,13 @@ def calc_edge_table1():
         move_count = edge_table1[h2_edges(cur_state)] # get the move count up to this state
 
         last_move = cur_state[6]
-<<<<<<< HEAD
-<<<<<<< HEAD
-        for move in MS:
+        for move in G1Space:
             cur_face = move//3
             last_face = last_move//3
             if cur_face == last_face: continue
             elif cur_face == 3 and last_face == 1: continue
             elif cur_face == 4 and last_face == 2: continue
             elif cur_face == 5 and last_face == 0: continue
-=======
-=======
->>>>>>> 9f8aee5ab96a00c6d0a7e1ee3b32106239dff7e3
-        for move in G1Space:
-            if move == last_move or \
-                move//3 == last_move//3 and \
-                    abs(move-last_move) == 2:
-                continue
->>>>>>> implemented a correct h2 database, but not space efficient
 
             next_state = cur_state.copy() # get a copy of cur state
             cube.move_edges1(next_state, move) # compute next state
@@ -131,24 +109,13 @@ def calc_edge_table2():
         move_count = edge_table2[h2_edges(cur_state)] # get the move count up to this state
 
         last_move = cur_state[6]
-<<<<<<< HEAD
-<<<<<<< HEAD
-        for move in MS:
+        for move in G1Space:
             cur_face = move//3
             last_face = last_move//3
             if cur_face == last_face: continue
             elif cur_face == 3 and last_face == 1: continue
             elif cur_face == 4 and last_face == 2: continue
             elif cur_face == 5 and last_face == 0: continue
-=======
-=======
->>>>>>> 9f8aee5ab96a00c6d0a7e1ee3b32106239dff7e3
-        for move in G1Space:
-            if move == last_move or \
-                move//3 == last_move//3 and \
-                    abs(move-last_move) == 2:
-                continue
->>>>>>> implemented a correct h2 database, but not space efficient
 
             next_state = cur_state.copy() # get a copy of cur state
             cube.move_edges2(next_state, move) # compute next state
@@ -163,33 +130,12 @@ def calc_edge_table2():
         if (n-last_print > 100000):
             last_print = n
             print(str(n//1000)+'k', str(queue.qsize()//1000)+'k', move_count, round((time()-start_time)/60, 2))
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     print(n)
     np.save("table/edge_table2", np.array(edge_table2, dtype=np.int8))
 
-if __name__ == "__main__":
-    #calc_corner_table()
-    #calc_edge_table1()
-=======
-
-=======
-    print(n)
->>>>>>> more efficient pruning in G1 stage
-    np.save("table/edge_table2_h2", np.array(edge_table2, dtype=np.int8))
 
 if __name__ == "__main__":
     calc_corner_table()
     calc_edge_table1()
->>>>>>> implemented a correct h2 database, but not space efficient
-=======
-    print(n)
-    np.save("table/edge_table2_h2", np.array(edge_table2, dtype=np.int8))
-
-if __name__ == "__main__":
-    calc_corner_table()
-    calc_edge_table1()
->>>>>>> 9f8aee5ab96a00c6d0a7e1ee3b32106239dff7e3
     calc_edge_table2()
     pass
