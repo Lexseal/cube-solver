@@ -135,7 +135,7 @@ for max_depth in range(0, 12):
                     first_phase_complete = True
                     break
         else:
-            for move in MS:
+            for move in G1Space:
                 if move == last_move or \
                     move//3 == last_move//3 and \
                         abs(move-last_move) == 2:
