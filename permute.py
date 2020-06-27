@@ -1,6 +1,7 @@
 from queue import SimpleQueue
 import numpy as np
 from time import time
+import random
 from cube_model import MoveSpace as MS
 from cube_model import G1Space
 from cube import Cube
@@ -15,6 +16,7 @@ def calc_corner_table():
     corner_table = bytearray([10]*40320)
 
     cube.corners.append(255)
+    print(list(cube.corners))
     queue.put(cube.corners)
     corner_table[0] = 0 # first entry is solved
     n = 0

@@ -143,7 +143,8 @@ def rank_edges(eg):
         ori[2]*8 + ori[3]*4 + ori[4]*2 + ori[5]
 
 if __name__ == "__main__":
-    start_time = time()
+    print(h2_corners([7, 6, 5, 4, 3, 2, 1, 0]))
+    '''start_time = time()
     perm = permutations(list(range(12)), 6)
     n = 0
     for itm in list(perm):
@@ -162,4 +163,4 @@ if __name__ == "__main__":
             if n > 665280:
                 exit()
     print(time()-start_time)
-    pass
+    pass'''

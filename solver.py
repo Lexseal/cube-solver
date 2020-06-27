@@ -1,5 +1,6 @@
 import numpy as np
 from collections import deque
+import random
 from cube import Cube
 from rank import rank_corners, rank_edges
 from rank import h2_corners, h2_edges
@@ -11,32 +12,32 @@ move_table_corner = np.load("table/move_table_corner.npy").tolist()
 move_table_edge = np.load("table/move_table_edge.npy").tolist()
 
 def move_cube(corners, edges1, edges2, move):
-        ct = move_table_corner[move]
-        corners[0] = ct[corners[0]]
-        corners[1] = ct[corners[1]]
-        corners[2] = ct[corners[2]]
-        corners[3] = ct[corners[3]]
-        corners[4] = ct[corners[4]]
-        corners[5] = ct[corners[5]]
-        corners[6] = ct[corners[6]]
-        corners[7] = ct[corners[7]]
+    ct = move_table_corner[move]
+    corners[0] = ct[corners[0]]
+    corners[1] = ct[corners[1]]
+    corners[2] = ct[corners[2]]
+    corners[3] = ct[corners[3]]
+    corners[4] = ct[corners[4]]
+    corners[5] = ct[corners[5]]
+    corners[6] = ct[corners[6]]
+    corners[7] = ct[corners[7]]
 
-        et = move_table_edge[move]
-        edges1[0] = et[edges1[0]]
-        edges1[1] = et[edges1[1]]
-        edges1[2] = et[edges1[2]]
-        edges1[3] = et[edges1[3]]
-        edges1[4] = et[edges1[4]]
-        edges1[5] = et[edges1[5]]
+    et = move_table_edge[move]
+    edges1[0] = et[edges1[0]]
+    edges1[1] = et[edges1[1]]
+    edges1[2] = et[edges1[2]]
+    edges1[3] = et[edges1[3]]
+    edges1[4] = et[edges1[4]]
+    edges1[5] = et[edges1[5]]
 
-        edges2[0] = et[edges2[0]]
-        edges2[1] = et[edges2[1]]
-        edges2[2] = et[edges2[2]]
-        edges2[3] = et[edges2[3]]
-        edges2[4] = et[edges2[4]]
-        edges2[5] = et[edges2[5]]
+    edges2[0] = et[edges2[0]]
+    edges2[1] = et[edges2[1]]
+    edges2[2] = et[edges2[2]]
+    edges2[3] = et[edges2[3]]
+    edges2[4] = et[edges2[4]]
+    edges2[5] = et[edges2[5]]
 
-def min_move(corners, edges1, edges2):
+def h1(corners, edges1, edges2):
     min_corners = corner_table[rank_corners(corners)]
     min_edges1 = edge_table1[rank_edges(edges1)]
     min_edges2 = edge_table2[rank_edges(edges2)]
@@ -67,7 +68,7 @@ edge_table2_h2 = bytearray(np.load("table/edge_table2_h2.npy"))
 cube = Cube()
 
 # apply some random moves
-for move in cube.shuffle(12):
+for move in cube.shuffle(16):
     print_move(move)
 
 solved_corners = bytearray(range(8))
@@ -101,7 +102,7 @@ def ori_solved(corners, edges1, edges2):
 cube.corners.append(255) # use 255 to denote the -1st move
 cube.corners.append(0) # takes 0 moves to get there
 first_phase_complete = False
-for max_depth in range(0, 12):
+for max_depth in range(0, 13):
     corner_stack = deque()
     edge1_stack = deque()
     edge2_stack = deque()
@@ -135,7 +136,9 @@ for max_depth in range(0, 12):
                     first_phase_complete = True
                     break
         else:
-            for move in MS:
+            move_space = bytearray(MS)
+            random.shuffle(move_space)
+            for move in move_space:
                 if move == last_move or \
                     move//3 == last_move//3 and \
                         abs(move-last_move) == 2:
@@ -150,16 +153,18 @@ for max_depth in range(0, 12):
                 move_cube(new_corners, new_edges1, new_edges2, move)
 
                 # add if within the search range
-                if depth + min_move(new_corners, new_edges1, new_edges2) <= max_depth:
+                if depth + h1(new_corners, new_edges1, new_edges2) <= max_depth:
                     corner_stack.append(new_corners)
                     edge1_stack.append(new_edges1)
                     edge2_stack.append(new_edges2)
     if first_phase_complete: break
     print("level", max_depth, "done")
 
+print(list(cube.corners), list(cube.edges1), list(cube.edges2))
+
 print("second phased started")
 cube.corners[9] = 0 # takes 0 moves to get there
-for max_depth in range(0, 18):
+for max_depth in range(0, 19):
     corner_stack = deque()
     edge1_stack = deque()
     edge2_stack = deque()
@@ -192,7 +197,9 @@ for max_depth in range(0, 18):
                         print_move(move)
                     exit(0)
         else:
-            for move in G1Space:
+            move_space = bytearray(G1Space)
+            random.shuffle(move_space)
+            for move in move_space:
                 cur_face = move//3
                 last_face = last_move//3
                 if cur_face == last_face: continue
