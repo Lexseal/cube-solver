@@ -23,6 +23,8 @@ def co_ori_inv(rank):
     start = 7-len(rank)
     for i in range(start, 7):
         co_ori[i] = int(rank[i-start])
+    
+    co_ori[7] = (3-sum(co_ori)%3)%3
     return co_ori
 
 def eg_ori(eg_ori):
@@ -44,6 +46,7 @@ def eg_ori_inv(rank):
     start = 11-len(rank)
     for i in range(start, 11):
         eg_ori[i] = int(rank[i-start])
+    eg_ori[11] = (2-sum(eg_ori)%2)%2
     return eg_ori
 
 """def ud_edges(egs):
@@ -63,7 +66,7 @@ def eg_ori_inv(rank):
 def ud_edges(egs):
     '''
     egs is a set of 12 numbers ranging from 0 to 11
-    we are only interested in entries 4-7
+    we are only interested in entries that are between 4-7
     '''
     start = False
     k = -1
@@ -84,7 +87,7 @@ def ud_edges_inv(rank):
         if rank-n_choose_k >= 0:
             rank -= n_choose_k
         else:
-            egs[n] = 7-k
+            egs[n] = 4+k
             k -= 1
             if k < 0:
                 break

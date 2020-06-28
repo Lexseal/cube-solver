@@ -2,14 +2,16 @@ import numpy as np
 import random
 import time
 from cube_model import MoveSpace as MS
-from rank import rank_edges
+import rank
 
 class MoveTable:
     def __init__(self, corners = bytearray(range(8)), edges = bytearray(range(12))):
         ''' Default position is solved, but can be changed to anything. '''
         self.corners = corners
         self.edges = edges
-        self.make_table()
+        #self.co_ori_table()
+        #self.eg_ori_table()
+        #self.ud_edges_table()
 
     def swap(self, arr, idx1, idx2):
         tmp = arr[idx1]
@@ -223,13 +225,71 @@ class MoveTable:
         elif command == MS.D3:
             self.d3()
 
-    #def make_table(self):
-        
+    def get_co_ori(self):
+        co_ori = [0]*8
+        for i, co in enumerate(self.corners):
+            co_ori[i] = co//8
+        return co_ori
 
-        # save
-        #print(corner_table, edge_table)
-        #np.save("table/move_table_corner", corner_table)
-        #np.save("table/move_table_edge", edge_table)
+    def set_co_ori(self, co_ori):
+        for i, co in enumerate(self.corners):
+            self.corners[i] = co%8+co_ori[i]*8
+
+    def co_ori_table(self):
+        co_ori_table = []
+        for i in range(2187):
+            cur_co_ori = rank.co_ori_inv(i)
+            state_table = []
+            for move in MS:
+                self.set_co_ori(cur_co_ori)
+                self.move(move)
+                state_table.append(rank.co_ori(self.get_co_ori()))
+            co_ori_table.append(state_table)
+        np.save("table/co_ori_table", np.array(co_ori_table, dtype=np.int8))
+
+    def get_eg_ori(self):
+        eg_ori = [0]*12
+        for i, co in enumerate(self.edges):
+            eg_ori[i] = co//12
+        return eg_ori
+
+    def set_eg_ori(self, eg_ori):
+        for i, co in enumerate(self.edges):
+            self.edges[i] = co%12+eg_ori[i]*12
+
+    def eg_ori_table(self):
+        eg_ori_table = []
+        for i in range(2048):
+            cur_eg_ori = rank.eg_ori_inv(i)
+            state_table = []
+            for move in MS:
+                self.set_eg_ori(cur_eg_ori)
+                self.move(move)
+                state_table.append(rank.eg_ori(self.get_eg_ori()))
+            eg_ori_table.append(state_table)
+        np.save("table/eg_ori_table", np.array(eg_ori_table, dtype=np.int8))
+
+    def get_ud_edges(self):
+        ud_edges = [0]*12
+        for i, eg in enumerate(self.edges):
+            if eg%12 >= 4 and eg%12 <= 7:
+                ud_edges[i] = eg%12
+        return ud_edges
+
+    def set_ud_egdes(self, ud_edges):
+        self.edges = ud_edges.copy()
+
+    def ud_edges_table(self):
+        ud_edges_table = []
+        for i in range(495):
+            cur_ud_edges = rank.ud_edges_inv(i)
+            state_table = []
+            for move in MS:
+                self.set_ud_egdes(cur_ud_edges)
+                self.move(move)
+                state_table.append(rank.ud_edges(self.get_ud_edges()))
+            ud_edges_table.append(state_table)
+        np.save("table/ud_edges_table", np.array(ud_edges_table, dtype=np.int8))
 
     def shuffle(self, N):
         for _ in range(N):
@@ -239,12 +299,23 @@ class MoveTable:
 def random_client(N):
     cube = MoveTable()
     moves = []
+    #ud_edge_table = cube.ud_edges()
     start_time = time.time()
+    #small = 10000000
+    #big = -1
+    print(list(cube.corners), list(cube.edges))
     for _ in range(N):
         new_move = random.randrange(0, 18)
-        #new_move = random.sample([0, 1, 2, 3, 4, 5, 6, 7, 8, 17], 1)[0]
+        #expected = ud_edge_table[rank.ud_edges(cube.get_ud_edges())][new_move]
         cube.move(new_move)
+        #actual = rank.ud_edges(cube.get_ud_edges())
+        #if actual < small:
+        #    small = actual
+        #if actual > big:
+        #    big = actual
+        #print(expected, actual)
         moves.append(new_move)
+    #print(small, big)
     print(list(cube.corners), list(cube.edges))
     
     print(N, "random moves took", round(time.time()-start_time, 2), "seconds")
@@ -255,11 +326,9 @@ def random_client(N):
         elif move in [2, 5, 8, 11, 14, 17]:
             move -= 2
         cube.move(move)
-    print(cube.corners, cube.edges)
+    print(list(cube.corners), list(cube.edges))
     print("After reversing, the entire operation took", round(time.time()-start_time, 2), "seconds")
 
 if __name__ == "__main__":
     #cube = MoveTable()
-    #cube.make_table()
-    random_client(1000000)
     pass
