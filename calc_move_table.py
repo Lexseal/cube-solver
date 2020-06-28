@@ -223,57 +223,13 @@ class MoveTable:
         elif command == MS.D3:
             self.d3()
 
-    def find_corner(self, cr):
-        cr %= 8
-        for i, corner in enumerate(self.corners):
-            if corner%8 == cr: return i, corner
-    
-    def find_edge(self, eg):
-        eg %= 12
-        for i, edge in enumerate(self.edges):
-            if edge%12 == eg: return i, edge
-
-    def make_table(self):
-        corner_table = np.full((18, 24), -1, dtype=np.int8)
-        edge_table = np.full((18, 24), -1, dtype=np.int8)
-
-        # initial position
-        self.corners = list(range(8))
-        self.edges = list(range(12))
-        corner_entries = 0
-        edge_entries = 0
-        while (corner_entries != 432 or edge_entries != 432):
-            rand_move = random.randrange(0, 18)
-            old_corners = self.corners.copy()
-            old_edges = self.edges.copy()
-            self.move(rand_move)
-            move_corner_table = corner_table[rand_move]
-            move_edge_table = edge_table[rand_move]
-
-            for old_pos, old_corner in enumerate(old_corners):
-                new_pos, new_corner = self.find_corner(old_corner)
-                old_ori = old_corner//8
-                new_ori = new_corner//8
-                old_pos += 8*old_ori
-                new_pos += 8*new_ori
-                if move_corner_table[old_pos] == -1:
-                    corner_entries += 1
-                    move_corner_table[old_pos] = new_pos
-
-            for old_pos, old_edge in enumerate(old_edges):
-                new_pos, new_edge = self.find_edge(old_edge)
-                old_ori = old_edge//12
-                new_ori = new_edge//12
-                old_pos += 12*old_ori
-                new_pos += 12*new_ori
-                if move_edge_table[old_pos] == -1:
-                    edge_entries += 1
-                    move_edge_table[old_pos] = new_pos
+    #def make_table(self):
+        
 
         # save
         #print(corner_table, edge_table)
-        np.save("table/move_table_corner", corner_table)
-        np.save("table/move_table_edge", edge_table)
+        #np.save("table/move_table_corner", corner_table)
+        #np.save("table/move_table_edge", edge_table)
 
     def shuffle(self, N):
         for _ in range(N):
@@ -305,4 +261,5 @@ def random_client(N):
 if __name__ == "__main__":
     #cube = MoveTable()
     #cube.make_table()
+    random_client(1000000)
     pass
