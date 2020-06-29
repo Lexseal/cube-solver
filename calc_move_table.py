@@ -52,96 +52,96 @@ class MoveTable:
     def d1(self):
         '''
         4 5 6 7
-        8 9 10 11
+        4 5 6 7
         '''
         self.permute(self.corners, 4, 5, 6, 7)
-        self.permute(self.edges, 8, 9, 10, 11)
+        self.permute(self.edges, 4, 5, 6, 7)
 
     def d2(self):
         self.swap(self.corners, 4, 6)
         self.swap(self.corners, 5, 7)
-        self.swap(self.edges, 8, 10)
-        self.swap(self.edges, 9, 11)
+        self.swap(self.edges, 4, 6)
+        self.swap(self.edges, 5, 7)
 
     def d3(self):
         self.permute(self.corners, 7, 6, 5, 4)
-        self.permute(self.edges, 11, 10, 9, 8)
+        self.permute(self.edges, 7, 6, 5, 4)
 
     def l1(self):
         '''
         0 3 4 7 corner
-        3 7 11 4 edge
+        3 10 5 11 edge
         '''
         self.permute(self.corners, 0, 3, 4, 7)
-        self.permute(self.edges, 3, 7, 11, 4)
+        self.permute(self.edges, 3, 10, 5, 11)
         self.rotateCorner(0, 1)
         self.rotateCorner(3, 2)
         self.rotateCorner(4, 1)
         self.rotateCorner(7, 2)
         self.flipEdge(3)
-        self.flipEdge(7)
+        self.flipEdge(10)
+        self.flipEdge(5)
         self.flipEdge(11)
-        self.flipEdge(4)
 
     def l2(self):
         self.swap(self.corners, 0, 4)
         self.swap(self.corners, 3, 7)
-        self.swap(self.edges, 3, 11)
-        self.swap(self.edges, 7, 4)
+        self.swap(self.edges, 3, 5)
+        self.swap(self.edges, 10, 11)
 
     def l3(self):
         self.permute(self.corners, 7, 4, 3, 0)
-        self.permute(self.edges, 4, 11, 7, 3)
+        self.permute(self.edges, 11, 5, 10, 3)
         self.rotateCorner(0, 1)
         self.rotateCorner(3, 2)
         self.rotateCorner(4, 1)
         self.rotateCorner(7, 2)
         self.flipEdge(3)
-        self.flipEdge(7)
+        self.flipEdge(10)
+        self.flipEdge(5)
         self.flipEdge(11)
-        self.flipEdge(4)
 
     def r1(self):
         '''
         1 6 5 2 corner
-        1 5 9 6 edge
+        1 8 7 9 edge
         '''
         self.permute(self.corners, 1, 6, 5, 2)
-        self.permute(self.edges, 1, 5, 9, 6)
+        self.permute(self.edges, 1, 8, 7, 9)
         self.rotateCorner(1, 2)
         self.rotateCorner(6, 1)
         self.rotateCorner(5, 2)
         self.rotateCorner(2, 1)
         self.flipEdge(1)
-        self.flipEdge(5)
+        self.flipEdge(8)
+        self.flipEdge(7)
         self.flipEdge(9)
-        self.flipEdge(6)
 
     def r2(self):
         self.swap(self.corners, 1, 5)
         self.swap(self.corners, 6, 2)
-        self.swap(self.edges, 1, 9)
-        self.swap(self.edges, 5, 6)
+        self.swap(self.edges, 1, 7)
+        self.swap(self.edges, 8, 9)
 
     def r3(self):
         self.permute(self.corners, 2, 5, 6, 1)
-        self.permute(self.edges, 6, 9, 5, 1)
+        self.permute(self.edges, 9, 7, 8, 1)
         self.rotateCorner(1, 2)
         self.rotateCorner(6, 1)
         self.rotateCorner(5, 2)
         self.rotateCorner(2, 1)
         self.flipEdge(1)
-        self.flipEdge(5)
+        self.flipEdge(8)
+        self.flipEdge(7)
         self.flipEdge(9)
-        self.flipEdge(6)
 
     def f1(self):
         '''
         2 5 4 3
-        2 6 8 7
+        2 9 6 10
         '''
         self.permute(self.corners, 2, 5, 4, 3)
-        self.permute(self.edges, 2, 6, 8, 7)
+        self.permute(self.edges, 2, 9, 6, 10)
         self.rotateCorner(2, 2)
         self.rotateCorner(5, 1)
         self.rotateCorner(4, 2)
@@ -150,12 +150,12 @@ class MoveTable:
     def f2(self):
         self.swap(self.corners, 2, 4)
         self.swap(self.corners, 5, 3)
-        self.swap(self.edges, 2, 8)
-        self.swap(self.edges, 6, 7)
+        self.swap(self.edges, 2, 6)
+        self.swap(self.edges, 9, 10)
 
     def f3(self):
         self.permute(self.corners, 3, 4, 5, 2)
-        self.permute(self.edges, 7, 8, 6, 2)
+        self.permute(self.edges, 10, 6, 9, 2)
         self.rotateCorner(2, 2)
         self.rotateCorner(5, 1)
         self.rotateCorner(4, 2)
@@ -164,10 +164,10 @@ class MoveTable:
     def b1(self):
         '''
         0 7 6 1
-        0 4 10 5
+        0 11 4 8
         '''
         self.permute(self.corners, 0, 7, 6, 1)
-        self.permute(self.edges, 0, 4, 10, 5)
+        self.permute(self.edges, 0, 11, 4, 8)
         self.rotateCorner(0, 1)
         self.rotateCorner(7, 2)
         self.rotateCorner(6, 1)
@@ -176,12 +176,12 @@ class MoveTable:
     def b2(self):
         self.swap(self.corners, 0, 6)
         self.swap(self.corners, 7, 1)
-        self.swap(self.edges, 0, 10)
-        self.swap(self.edges, 4, 5)
+        self.swap(self.edges, 0, 4)
+        self.swap(self.edges, 11, 8)
 
     def b3(self):
         self.permute(self.corners, 1, 6, 7, 0)
-        self.permute(self.edges, 5, 10, 4, 0)
+        self.permute(self.edges, 8, 4, 11, 0)
         self.rotateCorner(0, 1)
         self.rotateCorner(7, 2)
         self.rotateCorner(6, 1)
@@ -272,7 +272,7 @@ class MoveTable:
     def get_ud_edges(self):
         ud_edges = [0]*12
         for i, eg in enumerate(self.edges):
-            if eg%12 >= 4 and eg%12 <= 7:
+            if eg%12 >= 8:
                 ud_edges[i] = eg%12
         return ud_edges
 
@@ -290,6 +290,7 @@ class MoveTable:
                 state_table.append(rank.ud_edges(self.get_ud_edges()))
             ud_edges_table.append(state_table)
         np.save("table/ud_edges_table", np.array(ud_edges_table, dtype=np.int8))
+        return ud_edges_table
 
     def shuffle(self, N):
         for _ in range(N):
@@ -299,21 +300,21 @@ class MoveTable:
 def random_client(N):
     cube = MoveTable()
     moves = []
-    #ud_edge_table = cube.ud_edges()
+    ud_edge_table = cube.ud_edges_table()
     start_time = time.time()
     #small = 10000000
     #big = -1
     print(list(cube.corners), list(cube.edges))
     for _ in range(N):
         new_move = random.randrange(0, 18)
-        #expected = ud_edge_table[rank.ud_edges(cube.get_ud_edges())][new_move]
+        expected = ud_edge_table[rank.ud_edges(cube.get_ud_edges())][new_move]
         cube.move(new_move)
-        #actual = rank.ud_edges(cube.get_ud_edges())
+        actual = rank.ud_edges(cube.get_ud_edges())
         #if actual < small:
         #    small = actual
         #if actual > big:
         #    big = actual
-        #print(expected, actual)
+        print(expected, actual)
         moves.append(new_move)
     #print(small, big)
     print(list(cube.corners), list(cube.edges))
@@ -331,4 +332,5 @@ def random_client(N):
 
 if __name__ == "__main__":
     #cube = MoveTable()
+    random_client(1000)
     pass
