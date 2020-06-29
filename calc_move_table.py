@@ -10,9 +10,11 @@ class MoveTable:
         ''' Default position is solved, but can be changed to anything. '''
         self.corners = corners
         self.edges = edges
-        #self.co_ori_table()
-        #self.eg_ori_table()
-        #self.ud_edges_table()
+        self.co_ori_table()
+        self.eg_ori_table()
+        self.ud_edges_table()
+        self.co_perm_table()
+        self.eg_perm_table()
 
     def swap(self, arr, idx1, idx2):
         tmp = arr[idx1]
@@ -368,6 +370,6 @@ def random_client(N):
     print("After reversing, the entire operation took", round(time.time()-start_time, 2), "seconds")
 
 if __name__ == "__main__":
-    #cube = MoveTable()
-    random_client(1000)
+    cube = MoveTable()
+    #random_client(1000)
     pass
