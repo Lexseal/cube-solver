@@ -2,6 +2,7 @@ import numpy as np
 import random
 import time
 from cube_model import MoveSpace as MS
+from cube_model import G1Space
 import rank
 
 class MoveTable:
@@ -290,7 +291,43 @@ class MoveTable:
                 state_table.append(rank.ud_edges(self.get_ud_edges()))
             ud_edges_table.append(state_table)
         np.save("table/ud_edges_table", np.array(ud_edges_table, dtype=np.int8))
-        return ud_edges_table
+
+    def get_co_perm(self):
+        return [co%8 for co in self.corners]
+
+    def set_co_perm(self, co_perm):
+        self.corners = co_perm.copy()
+
+    def co_perm_table(self):
+        co_perm_table = []
+        for i in range(40320):
+            cur_co_perm = rank.co_perm_inv(i)
+            state_table = [-1]*18
+            for move in G1Space:
+                self.set_co_perm(cur_co_perm)
+                self.move(move)
+                state_table[move] = rank.co_perm(self.get_co_perm())
+            co_perm_table.append(state_table)
+        np.save("table/co_perm_table", np.array(co_perm_table, dtype=np.int8))
+        return co_perm_table
+
+    def get_eg_perm(self):
+        return [eg%12 for eg in self.edges[:8]] 
+
+    def set_eg_perm(self, eg_perm):
+        self.edges[:8] = eg_perm.copy()
+
+    def eg_perm_table(self):
+        eg_perm_table = []
+        for i in range(40320):
+            cur_eg_perm = rank.eg_perm_inv(i)
+            state_table = [-1]*18
+            for move in G1Space:
+                self.set_eg_perm(cur_eg_perm)
+                self.move(move)
+                state_table[move] = rank.eg_perm(self.get_eg_perm())
+            eg_perm_table.append(state_table)
+        np.save("table/eg_perm_table", np.array(eg_perm_table, dtype=np.int8))
 
     def shuffle(self, N):
         for _ in range(N):
@@ -300,16 +337,16 @@ class MoveTable:
 def random_client(N):
     cube = MoveTable()
     moves = []
-    ud_edge_table = cube.ud_edges_table()
+    co_perm_table = cube.co_perm_table()
     start_time = time.time()
     #small = 10000000
     #big = -1
     print(list(cube.corners), list(cube.edges))
     for _ in range(N):
-        new_move = random.randrange(0, 18)
-        expected = ud_edge_table[rank.ud_edges(cube.get_ud_edges())][new_move]
+        new_move = random.sample(list(G1Space), 1)[0]
+        expected = co_perm_table[rank.co_perm(cube.get_co_perm())][new_move]
         cube.move(new_move)
-        actual = rank.ud_edges(cube.get_ud_edges())
+        actual = rank.co_perm(cube.get_co_perm())
         #if actual < small:
         #    small = actual
         #if actual > big:
