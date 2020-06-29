@@ -1,1 +1,0 @@
-corner_table_h2.npy filter=lfs diff=lfs merge=lfs -text

@@ -10,11 +10,14 @@ class MoveTable:
         ''' Default position is solved, but can be changed to anything. '''
         self.corners = corners
         self.edges = edges
+
         self.co_ori_table()
         self.eg_ori_table()
         self.ud_edges_table()
+
         self.co_perm_table()
         self.eg_perm_table()
+        self.ud_perm_table()
 
     def swap(self, arr, idx1, idx2):
         tmp = arr[idx1]
@@ -331,6 +334,24 @@ class MoveTable:
             eg_perm_table.append(state_table)
         np.save("table/eg_perm_table", np.array(eg_perm_table, dtype=np.int8))
 
+    def get_ud_perm(self):
+        return [eg%12 for eg in self.edges[8:]]
+
+    def set_ud_perm(self, ud_perm):
+        self.edges[8:] = ud_perm.copy()
+    
+    def ud_perm_table(self):
+        ud_perm_table = []
+        for i in range(24):
+            cur_ud_perm = rank.ud_perm_inv(i)
+            state_table = [-1]*18
+            for move in G1Space:
+                self.set_ud_perm(cur_ud_perm)
+                self.move(move)
+                state_table[move] = rank.ud_perm(self.get_ud_perm())
+            ud_perm_table.append(state_table)
+        np.save("table/ud_perm_table", np.array(ud_perm_table, dtype=np.int8))
+
     def shuffle(self, N):
         for _ in range(N):
             rand_move = random.randrange(len(MS))
@@ -339,16 +360,16 @@ class MoveTable:
 def random_client(N):
     cube = MoveTable()
     moves = []
-    co_perm_table = cube.co_perm_table()
+    eg_perm_table = cube.eg_perm_table()
     start_time = time.time()
     #small = 10000000
     #big = -1
     print(list(cube.corners), list(cube.edges))
     for _ in range(N):
         new_move = random.sample(list(G1Space), 1)[0]
-        expected = co_perm_table[rank.co_perm(cube.get_co_perm())][new_move]
+        expected = eg_perm_table[rank.eg_perm(cube.get_eg_perm())][new_move]
         cube.move(new_move)
-        actual = rank.co_perm(cube.get_co_perm())
+        actual = rank.eg_perm(cube.get_eg_perm())
         #if actual < small:
         #    small = actual
         #if actual > big:

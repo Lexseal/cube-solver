@@ -1,4 +1,0 @@
-corner_table.npy.old filter=lfs diff=lfs merge=lfs -text
-corner_table.npy filter=lfs diff=lfs merge=lfs -text
-edge_table1.npy filter=lfs diff=lfs merge=lfs -text
-edge_table2.npy filter=lfs diff=lfs merge=lfs -text
