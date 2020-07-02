@@ -5,8 +5,7 @@ import random
 from cube_model import MoveSpace as MS
 from cube_model import G1Space
 from cube import Cube
-#from rank import rank_corners, rank_edges
-from rank import h2_corners, h2_edges
+import rank
 
 def calc_corner_table():
     cube = Cube()

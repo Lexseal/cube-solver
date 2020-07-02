@@ -11,14 +11,6 @@ class MoveTable:
         self.corners = corners
         self.edges = edges
 
-        self.co_ori_table()
-        self.eg_ori_table()
-        self.ud_edges_table()
-
-        self.co_perm_table()
-        self.eg_perm_table()
-        self.ud_perm_table()
-
     def swap(self, arr, idx1, idx2):
         tmp = arr[idx1]
         arr[idx1] = arr[idx2]
@@ -251,7 +243,7 @@ class MoveTable:
                 self.move(move)
                 state_table.append(rank.co_ori(self.get_co_ori()))
             co_ori_table.append(state_table)
-        np.save("table/co_ori_table", np.array(co_ori_table, dtype=np.int8))
+        np.save("table/co_ori_table", np.array(co_ori_table, dtype=np.uint16))
 
     def get_eg_ori(self):
         eg_ori = [0]*12
@@ -273,7 +265,7 @@ class MoveTable:
                 self.move(move)
                 state_table.append(rank.eg_ori(self.get_eg_ori()))
             eg_ori_table.append(state_table)
-        np.save("table/eg_ori_table", np.array(eg_ori_table, dtype=np.int8))
+        np.save("table/eg_ori_table", np.array(eg_ori_table, dtype=np.uint16))
 
     def get_ud_edges(self):
         ud_edges = [0]*12
@@ -295,7 +287,7 @@ class MoveTable:
                 self.move(move)
                 state_table.append(rank.ud_edges(self.get_ud_edges()))
             ud_edges_table.append(state_table)
-        np.save("table/ud_edges_table", np.array(ud_edges_table, dtype=np.int8))
+        np.save("table/ud_edges_table", np.array(ud_edges_table, dtype=np.uint16))
 
     def get_co_perm(self):
         return [co%8 for co in self.corners]
@@ -313,7 +305,7 @@ class MoveTable:
                 self.move(move)
                 state_table[move] = rank.co_perm(self.get_co_perm())
             co_perm_table.append(state_table)
-        np.save("table/co_perm_table", np.array(co_perm_table, dtype=np.int8))
+        np.save("table/co_perm_table", np.array(co_perm_table, dtype=np.uint16))
         return co_perm_table
 
     def get_eg_perm(self):
@@ -332,7 +324,7 @@ class MoveTable:
                 self.move(move)
                 state_table[move] = rank.eg_perm(self.get_eg_perm())
             eg_perm_table.append(state_table)
-        np.save("table/eg_perm_table", np.array(eg_perm_table, dtype=np.int8))
+        np.save("table/eg_perm_table", np.array(eg_perm_table, dtype=np.uint16))
 
     def get_ud_perm(self):
         return [eg%12 for eg in self.edges[8:]]
@@ -350,26 +342,47 @@ class MoveTable:
                 self.move(move)
                 state_table[move] = rank.ud_perm(self.get_ud_perm())
             ud_perm_table.append(state_table)
-        np.save("table/ud_perm_table", np.array(ud_perm_table, dtype=np.int8))
+        np.save("table/ud_perm_table", np.array(ud_perm_table, dtype=np.uint8))
+
+    def make_tables(self):
+        self.co_ori_table()
+        self.eg_ori_table()
+        self.ud_edges_table()
+
+        self.co_perm_table()
+        self.eg_perm_table()
+        self.ud_perm_table()
 
     def shuffle(self, N):
+        move_list = []
         for _ in range(N):
-            rand_move = random.randrange(len(MS))
+            rand_move = random.randrange(18)
             self.move(rand_move)
+            move_list.append(rand_move)
+        return move_list
+
+    def shuffle_G1(self, N):
+        move_list = []
+        for _ in range(N):
+            rand_move = random.sample(list(G1Space), 1)[0]
+            self.move(rand_move)
+            move_list.append(rand_move)
+        return move_list
 
 def random_client(N):
     cube = MoveTable()
     moves = []
-    eg_perm_table = cube.eg_perm_table()
+    co_ori_table = np.load("table/co_ori_table.npy")
+    #co_ori_table = cube.co_ori_table()
     start_time = time.time()
     #small = 10000000
     #big = -1
     print(list(cube.corners), list(cube.edges))
     for _ in range(N):
-        new_move = random.sample(list(G1Space), 1)[0]
-        expected = eg_perm_table[rank.eg_perm(cube.get_eg_perm())][new_move]
+        new_move = random.sample(list(MS), 1)[0]
+        expected = co_ori_table[rank.co_ori(cube.get_co_ori())][new_move]
         cube.move(new_move)
-        actual = rank.eg_perm(cube.get_eg_perm())
+        actual = rank.co_ori(cube.get_co_ori())
         #if actual < small:
         #    small = actual
         #if actual > big:
@@ -392,5 +405,6 @@ def random_client(N):
 
 if __name__ == "__main__":
     cube = MoveTable()
-    #random_client(1000)
+    cube.make_tables()
+    #random_client(100)
     pass

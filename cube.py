@@ -5,7 +5,6 @@ from time import time
 from cube_model import MoveSpace as MS
 from cube_model import G1Space
 from calc_move_table import MoveTable
-from rank import h2_corners, rank_corners
 
 class Cube:
     def __init__(self, corners = bytearray(range(8)), edges = bytearray(range(12))):
@@ -19,7 +18,7 @@ class Cube:
         # make a move table if it doesn't exist
         if not os.path.exists("table/move_table_corner.npy") or not os.path.exists("table/move_table_edge.npy"):
             move_table = MoveTable()
-            move_table.make_table()
+            move_table.make_tables()
 
         # load move_table
         self.corner_table = np.load("table/move_table_corner.npy").tolist()
@@ -82,17 +81,10 @@ class Cube:
     
     def shuffle(self, N):
         move_list = []
-        bool_table = [False]*88179840
         for _ in range(N):
-            bool_table[rank_corners(self.corners)] = True
             rand_move = random.sample(list(G1Space), 1)[0]
             self.move(rand_move)
             move_list.append(rand_move)
-        count = 0
-        for itm in bool_table:
-            if itm:
-                count += 1
-        print(count)
         return move_list
 
 
