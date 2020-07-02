@@ -2,31 +2,33 @@ from queue import SimpleQueue
 import numpy as np
 from time import time
 import random
+from array import array
+from copy import copy
 from cube_model import MoveSpace as MS
 from cube_model import G1Space
 from cube import Cube
 import rank
+from move_coord import stage1_move, stage2_move
 
-def calc_corner_table():
-    cube = Cube()
+def calc_stage_1_corners():
+    # works because stage 1 can be completed in 12 moves or fewer
+    stage_1_corners = bytearray([12]*2187)
+    stage_1_corners[0] = 0 # first entry is solved so takes 0 move to get to
+
+    # [co_ori, eg_ori, ud_edges, last_move]
+    state = array('I', [0, 0, 0, 255]) # a new cube
     queue = SimpleQueue()
+    queue.put(state)
 
-    # works because all corner states can be achieved in 10 moves or fewer
-    corner_table = bytearray([10]*40320)
-
-    cube.corners.append(255)
-    print(list(cube.corners))
-    queue.put(cube.corners)
-    corner_table[0] = 0 # first entry is solved
     n = 0
     last_print = 0
-    start_time = time()
+    start_time = time() # logs
     while queue.qsize() > 0:
         cur_state = queue.get() # pop
-        move_count = corner_table[h2_corners(cur_state)] # get the move count up to this state
+        move_count = stage_1_corners[cur_state[0]] # get the move count up to this state
 
-        last_move = cur_state[8]
-        for move in G1Space:
+        last_move = cur_state[3]
+        for move in MS:
             cur_face = move//3
             last_face = last_move//3
             if cur_face == last_face: continue
@@ -34,41 +36,43 @@ def calc_corner_table():
             elif cur_face == 4 and last_face == 2: continue
             elif cur_face == 5 and last_face == 0: continue
 
-            next_state = cur_state.copy() # get a copy of cur state
-            cube.move_corners(next_state, move) # compute next state
-            next_idx = h2_corners(next_state) # rank next state
-            next_count = corner_table[next_idx] # get moves count
+            next_state = copy(cur_state) # get a copy of cur state
+            stage1_move(next_state, move) # compute next state
+
+            next_idx = next_state[0]
+            next_count = stage_1_corners[next_idx] # get moves count
             if next_count > move_count+1:
-                corner_table[next_idx] = move_count+1
-                next_state[8] = move
+                stage_1_corners[next_idx] = move_count+1
+                next_state[3] = move
                 queue.put(next_state)
                 n += 1
 
-        if (n-last_print > 100000):
+        if (n-last_print > 100):
             last_print = n
-            print(str(n//1000)+'k', str(queue.qsize()//1000)+'k', move_count, round((time()-start_time)/60, 2))
+            print(n, str(queue.qsize()//1000)+'k', move_count, round((time()-start_time)/60, 2))
     print(n)
-    np.save("table/corner_table_h2", np.array(corner_table, dtype=np.int8))
+    np.save("table/stage_1_corners", np.array(stage_1_corners, dtype=np.uint8))
 
-def calc_edge_table1():
-    cube = Cube()
+def calc_stage_1_edges():
+    # works because stage 1 can be completed in 12 moves or fewer
+    stage_1_edges = bytearray([12]*2048*495)
+    stage_1_edges[0] = 0 # first entry is solved so takes 0 move to get to
+
+    # [co_ori, eg_ori, ud_edges, last_move]
+    state = array('I', [0, 0, 0, 255]) # a new cube
     queue = SimpleQueue()
+    queue.put(state)
 
-    # works because all edge states can be achieved in 10 moves or fewer
-    edge_table1 = bytearray([10]*665280)
-
-    cube.edges1.append(255)
-    queue.put(cube.edges1)
-    edge_table1[0] = 0 # first entry is solved
     n = 0
     last_print = 0
-    start_time = time()
+    start_time = time() # logs
     while queue.qsize() > 0:
         cur_state = queue.get() # pop
-        move_count = edge_table1[h2_edges(cur_state)] # get the move count up to this state
+        cur_idx = cur_state[1]*495+cur_state[2]
+        move_count = stage_1_edges[cur_idx] # get the move count up to this state
 
-        last_move = cur_state[6]
-        for move in G1Space:
+        last_move = cur_state[3]
+        for move in MS:
             cur_face = move//3
             last_face = last_move//3
             if cur_face == last_face: continue
@@ -76,67 +80,25 @@ def calc_edge_table1():
             elif cur_face == 4 and last_face == 2: continue
             elif cur_face == 5 and last_face == 0: continue
 
-            next_state = cur_state.copy() # get a copy of cur state
-            cube.move_edges1(next_state, move) # compute next state
-            next_idx = h2_edges(next_state) # rank next state
-            next_count = edge_table1[next_idx] # get moves count
+            next_state = copy(cur_state) # get a copy of cur state
+            stage1_move(next_state, move) # compute next state
+
+            next_idx = next_state[1]*495+next_state[2]
+            next_count = stage_1_edges[next_idx] # get moves count
             if next_count > move_count+1:
-                edge_table1[next_idx] = move_count+1
-                next_state[6] = move
+                stage_1_edges[next_idx] = move_count+1
+                next_state[3] = move
                 queue.put(next_state)
                 n += 1
 
-        if (n-last_print > 100000):
+        if (n-last_print > 1000):
             last_print = n
-            print(str(n//1000)+'k', str(queue.qsize()//1000)+'k', move_count, round((time()-start_time)/60, 2))
+            print(n, str(queue.qsize()//1000)+'k', move_count, round((time()-start_time)/60, 2))
     print(n)
-    np.save("table/edge_table1_h2", np.array(edge_table1, dtype=np.int8))
-
-def calc_edge_table2():
-    cube = Cube()
-    queue = SimpleQueue()
-
-    # works because all edge states can be achieved in 10 moves or fewer
-    edge_table2 = bytearray([10]*665280)
-
-    cube.edges2.append(255)
-    queue.put(cube.edges2)
-    edge_table2[h2_edges(cube.edges2)] = 0 # first entry is solved
-    n = 0
-    last_print = 0
-    start_time = time()
-    while queue.qsize() > 0:
-        cur_state = queue.get() # pop
-        move_count = edge_table2[h2_edges(cur_state)] # get the move count up to this state
-
-        last_move = cur_state[6]
-        for move in G1Space:
-            cur_face = move//3
-            last_face = last_move//3
-            if cur_face == last_face: continue
-            elif cur_face == 3 and last_face == 1: continue
-            elif cur_face == 4 and last_face == 2: continue
-            elif cur_face == 5 and last_face == 0: continue
-
-            next_state = cur_state.copy() # get a copy of cur state
-            cube.move_edges2(next_state, move) # compute next state
-            next_idx = h2_edges(next_state) # rank next state
-            next_count = edge_table2[next_idx] # get moves count
-            if next_count > move_count+1:
-                edge_table2[next_idx] = move_count+1
-                next_state[6] = move
-                queue.put(next_state)
-                n += 1
-
-        if (n-last_print > 100000):
-            last_print = n
-            print(str(n//1000)+'k', str(queue.qsize()//1000)+'k', move_count, round((time()-start_time)/60, 2))
-    print(n)
-    np.save("table/edge_table2", np.array(edge_table2, dtype=np.int8))
+    np.save("table/stage_1_edges", np.array(stage_1_edges, dtype=np.uint8))
 
 
 if __name__ == "__main__":
-    calc_corner_table()
-    calc_edge_table1()
-    calc_edge_table2()
+    #calc_stage_1_corners()
+    calc_stage_1_edges()
     pass
