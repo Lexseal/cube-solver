@@ -1,11 +1,11 @@
 from time import time
 import sys
 import array
+import numpy as np
 
 start_time = time()
-arr1 = []
-arr2 = array()
-for i, itm in enumerate(arr):
-    if itm > 10:
+table = np.load("table/stage1_edges.npy")
+for i, itm in enumerate(table):
+    if itm >= 10:
         print(i, itm)
 print(time()-start_time)

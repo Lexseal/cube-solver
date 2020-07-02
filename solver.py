@@ -7,6 +7,7 @@ import rank
 from cube_model import MoveSpace as MS
 from cube_model import G1Space
 import move_coord
+from calc_move_table import MoveTable
 
 def print_move(move_num):
     for move in MS:
@@ -27,11 +28,12 @@ def is_goal(state):
     return state[0] == 0 and state[1] == 0 and state[2] == 0
 
 # iterative deepening depth-first search
-state = move_coord.shuffle(0)
+state, shuffle_list, cube = move_coord.shuffle(10)
 state.append(255) # use 255 to denote the -1st move
 state.append(0) # takes 0 moves to get there
 # state = [co_ori, eg_ori, ud_edges, last_move, depth]
 
+move_list = []
 first_phase_complete = False
 for max_depth in range(0, 13):
     state_stack = deque()
@@ -44,15 +46,14 @@ for max_depth in range(0, 13):
         while (len(move_stack) > cur_depth):
             move_stack.pop()
 
-        last_move = cur_corners[3]
+        last_move = cur_state[3]
         move_stack.append(last_move)
 
         if cur_depth == max_depth:
             if is_goal(cur_state):
                 print("victory", cur_depth)
-                move_list = []
-                for _ in range(cur_depth):
-                    move_list.insert(0, move_stack.pop())
+                for move in move_stack:
+                    move_list.append(move)
                 for move in move_list:
                     print_move(move)
                 first_phase_complete = True
@@ -79,3 +80,7 @@ for max_depth in range(0, 13):
                     state_stack.append(new_state)
     if first_phase_complete: break
     print("level", max_depth, "done")
+
+for move in move_list:
+    cube.move(move)
+print(list(cube.corners), list(cube.edges))

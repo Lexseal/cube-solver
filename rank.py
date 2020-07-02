@@ -107,6 +107,5 @@ def ud_perm_inv(rank):
     return [i+7 for i in (Permutation.from_lehmer(rank, 4)).to_image(4)]
 
 if __name__ == "__main__":
-    for i in range(24):
-        print(ud_perm(ud_perm_inv(i)))
+    print(co_ori([2, 1, 2, 1, 1, 0, 0, 2]))
     #print(h2_co_permners([7, 6, 5, 4, 3, 2, 1, 0]))

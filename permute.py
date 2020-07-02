@@ -11,7 +11,7 @@ import rank
 from move_coord import stage1_move, stage2_move
 
 def calc_stage_1_corners():
-    # works because stage 1 can be completed in 12 moves or fewer
+    # stage 1 can be completed in 12 moves or fewer
     stage_1_corners = bytearray([12]*2187)
     stage_1_corners[0] = 0 # first entry is solved so takes 0 move to get to
 
@@ -96,6 +96,8 @@ def calc_stage_1_edges():
             print(n, str(queue.qsize()//1000)+'k', move_count, round((time()-start_time)/60, 2))
     print(n)
     np.save("table/stage1_edges", np.array(stage_1_edges, dtype=np.uint8))
+
+def calc_stage_2_corners():
 
 
 if __name__ == "__main__":

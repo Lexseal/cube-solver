@@ -1,10 +1,17 @@
 import numpy as np
 import os.path
 import random
+from array import array
 from calc_move_table import MoveTable
 import rank
-from array import array
-from sys import getsizeof
+from cube_model import MoveSpace as MS
+
+
+def print_move(move_num):
+    for move in MS:
+        if move_num == move:
+            print(move)
+            return
 
 if not os.path.exists("table/co_ori_table.npy") or\
     not os.path.exists("table/eg_ori_table.npy") or\
@@ -36,29 +43,30 @@ def stage2_move(state, move):
 
 def shuffle(N):
     cube = MoveTable()
-    move_list = cube.shuffle_G1(N)
+    move_list = cube.shuffle(N)
+    for move in move_list:
+        print_move(move)
 
-    co_perm = rank.co_perm(cube.get_co_perm())
-    eg_perm = rank.eg_perm(cube.get_eg_perm())
-    ud_perm = rank.ud_perm(cube.get_ud_perm())
+    co_ori = rank.co_ori(cube.get_co_ori())
+    eg_ori = rank.eg_ori(cube.get_eg_ori())
+    ud_edges = rank.ud_edges(cube.get_ud_edges())
 
-    return array('I', [co_perm, eg_perm, ud_perm])
-
+    return array('I', [co_ori, eg_ori, ud_edges]), move_list, cube
 
 def verify():
     cube = MoveTable()
-    move_list = cube.shuffle_G1(1000)
+    move_list = cube.shuffle(1000)
 
-    expected_co_perm = rank.co_perm(cube.get_co_perm())
-    expected_eg_perm = rank.eg_perm(cube.get_eg_perm())
-    expected_ud_perm = rank.ud_perm(cube.get_ud_perm())
+    expected_co_ori = rank.co_ori(cube.get_co_ori())
+    expected_eg_ori = rank.eg_ori(cube.get_eg_ori())
+    expected_ud_edges = rank.ud_edges(cube.get_ud_edges())
 
     state = array('I', [0, 0, 0]) # a new cube
     #print(getsizeof(state))
     for move in move_list:
-        stage2_move(state, move)
+        stage1_move(state, move)
     
-    print(expected_co_perm, expected_eg_perm, expected_ud_perm)
+    print(expected_co_ori, expected_eg_ori, expected_ud_edges)
     print(state)
     #print(getsizeof(state))
 
