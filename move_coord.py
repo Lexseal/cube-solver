@@ -34,6 +34,17 @@ def stage2_move(state, move):
     state[1] = eg_perm_table[state[1]][move]
     state[2] = ud_perm_table[state[2]][move]
 
+def shuffle(N):
+    cube = MoveTable()
+    move_list = cube.shuffle_G1(N)
+
+    co_perm = rank.co_perm(cube.get_co_perm())
+    eg_perm = rank.eg_perm(cube.get_eg_perm())
+    ud_perm = rank.ud_perm(cube.get_ud_perm())
+
+    return array('I', [co_perm, eg_perm, ud_perm])
+
+
 def verify():
     cube = MoveTable()
     move_list = cube.shuffle_G1(1000)

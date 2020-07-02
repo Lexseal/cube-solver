@@ -51,7 +51,7 @@ def calc_stage_1_corners():
             last_print = n
             print(n, str(queue.qsize()//1000)+'k', move_count, round((time()-start_time)/60, 2))
     print(n)
-    np.save("table/stage_1_corners", np.array(stage_1_corners, dtype=np.uint8))
+    np.save("table/stage1_corners", np.array(stage_1_corners, dtype=np.uint8))
 
 def calc_stage_1_edges():
     # works because stage 1 can be completed in 12 moves or fewer
@@ -95,10 +95,10 @@ def calc_stage_1_edges():
             last_print = n
             print(n, str(queue.qsize()//1000)+'k', move_count, round((time()-start_time)/60, 2))
     print(n)
-    np.save("table/stage_1_edges", np.array(stage_1_edges, dtype=np.uint8))
+    np.save("table/stage1_edges", np.array(stage_1_edges, dtype=np.uint8))
 
 
 if __name__ == "__main__":
-    #calc_stage_1_corners()
+    calc_stage_1_corners()
     calc_stage_1_edges()
     pass
