@@ -44,8 +44,8 @@ def stage2_move(state, move):
 def shuffle(N):
     cube = MoveTable()
     move_list = cube.shuffle(N)
-    for move in move_list:
-        print_move(move)
+    #for move in move_list:
+    #    print_move(move)
 
     co_ori = rank.co_ori(cube.get_co_ori())
     eg_ori = rank.eg_ori(cube.get_eg_ori())
