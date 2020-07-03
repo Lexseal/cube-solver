@@ -2,12 +2,16 @@ import numpy as np
 from collections import deque
 import random
 from copy import copy
-from cube import Cube
+from time import time
+import os.path
 import rank
 from cube_model import MoveSpace as MS
 from cube_model import G1Space
 import move_coord
-from calc_move_table import MoveTable
+import calc_move_table
+import permute
+
+start_time = time()
 
 def print_move(move_num):
     for move in MS:
@@ -16,6 +20,15 @@ def print_move(move_num):
             return
 
 # load tables
+if not os.path.exists("table/stage1_corners.npy") or\
+    not os.path.exists("table/stage1_edges.npy") or\
+    not os.path.exists("table/stage2_corners.npy") or\
+    not os.path.exists("table/stage2_edges.npy"):
+    print("making pruning tables...")
+    permute.calc_stage1_corners()
+    permute.calc_stage1_edges()
+    permute.calc_stage2_corners()
+    permute.calc_stage2_egdes()
 stage1_corners = bytearray(np.load("table/stage1_corners.npy"))
 stage1_edges = bytearray(np.load("table/stage1_edges.npy"))
 stage2_corners = bytearray(np.load("table/stage2_corners.npy"))
@@ -35,7 +48,7 @@ def is_goal(state):
     return state[0] == 0 and state[1] == 0 and state[2] == 0
 
 # iterative deepening depth-first search
-state, shuffle_list, cube = move_coord.shuffle(200)
+state, shuffle_list, cube = move_coord.shuffle(100)
 state.append(255) # use 255 to denote the -1st move
 state.append(0) # takes 0 moves to get there
 # state = [co_ori, eg_ori, ud_edges, last_move, depth]
@@ -61,6 +74,7 @@ for max_depth in range(0, 13):
                 print("victory", cur_depth)
                 for _ in range(cur_depth):
                     move_list1.insert(0, move_stack.pop())
+                state = cur_state
                 first_phase_complete = True
                 break
         else:
@@ -84,7 +98,7 @@ for max_depth in range(0, 13):
                 if next_depth + h1(new_state) <= max_depth:
                     state_stack.append(new_state)
     if first_phase_complete: break
-    print("level", max_depth, "done")
+    #print("level", max_depth, "done")
 
 for move in move_list1:
     cube.move(move)
@@ -139,9 +153,12 @@ for max_depth in range(0, 19):
                 if next_depth + h2(new_state) <= max_depth:
                     state_stack.append(new_state)
     if second_phase_complete: break
-    print("level", max_depth, "done")
+    #print("level", max_depth, "done")
 
 for move in move_list2:
     cube.move(move)
     print_move(move)
-print(list(cube.corners), list(cube.edges))
+
+#print(list(cube.corners), list(cube.edges))
+
+print("total moves:", len(move_list1)+len(move_list2), "took", time() - start_time)
