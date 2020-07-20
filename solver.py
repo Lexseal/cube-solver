@@ -27,6 +27,9 @@ if not os.path.exists("table/stage1_corners.npy") or\
     permute.calc_stage1_edges()
     permute.calc_stage2_corners()
     permute.calc_stage2_egdes()
+    print("table finished. please run the program again")
+    exit(0)
+
 stage1_corners = bytearray(np.load("table/stage1_corners.npy"))
 stage1_edges = bytearray(np.load("table/stage1_edges.npy"))
 stage2_corners = bytearray(np.load("table/stage2_corners.npy"))
@@ -47,9 +50,10 @@ def is_goal(state):
 
 max_move = 23
 num_of_shuffles = 100
+num_of_solves = 100
 
 time_list = []
-for _ in range(1):
+for _ in range(num_of_solves):
 
     # iterative deepening depth-first search
     init_state, shuffle_list, init_cube = move_coord.shuffle(num_of_shuffles)
@@ -179,7 +183,9 @@ for _ in range(1):
             solution = move_list1+move_list2
         else:
             times_failed += 1
-            if times_failed%5 == 0:
+            if stage1_min < 9:
+                stage1_min += 1
+            elif times_failed%7 == 0:
                 stage1_min += 1
             stage1_min = min(stage1_min, 12) # can't be greater than 12
 

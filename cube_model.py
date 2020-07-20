@@ -61,25 +61,6 @@ class Color(IntEnum):
 
     D=6
 
-    '''
-         ------ 
-         | BL |
-    -----|----|---------- 
-    | OR | WI | RE | YE |
-    -----|----|----------
-         | GR |
-         ------
-    Alternatively, use the actual color to represent a cube.
-    Note that the color scheme on each cube might differ.
-    B for Blue
-    O for Orange...
-    '''
-    BL=1
-
-    OR=2; WI=3; RE=4; YE=5
-
-    GR=6
-
 
 class MoveSpace(IntEnum):
     '''
@@ -117,11 +98,44 @@ class Corner(IntEnum):
     UFR = 2; RUF = 10; FRU = 18
     ULF = 3; FUL = 11; LFU = 19
     
-
     DFL = 4; LDF = 12; FLD = 20
     DRF = 5; FDR = 13; RFD = 21
     DBR = 6; RDB = 14; BRD = 22
     DLB = 7; BDL = 15; LBD = 23
+
+def conor_to_char(corner):
+    cor = corner%8
+    cor_char = []
+    if cor == Corner.UBL:
+        cor_char = ['U', 'B', 'L']
+    elif cor == Corner.URB:
+        cor_char = ['U', 'R', 'B']
+    elif cor == Corner.UFR:
+        cor_char = ['U', 'F', 'R']
+    elif cor == Corner.ULF:
+        cor_char = ['U', 'L', 'F']
+    elif cor == Corner.DFL:
+        cor_char = ['D', 'F', 'L']
+    elif cor == Corner.DRF:
+        cor_char = ['D', 'R', 'F']
+    elif cor == Corner.DBR:
+        cor_char = ['D', 'B', 'R']
+    elif cor == Corner.DLB:
+        cor_char = ['D', 'L', 'B']
+
+    cor_ori = corner//8
+    if cor_ori == 1:
+        tmp = cor_char = cor_char[2]
+        cor_char[2] = cor_char[1]        
+        cor_char[1] = cor_char[0]        
+        cor_char[0] = tmp
+    elif cor_ori == 2:
+        tmp = cor_char = cor_char[0]
+        cor_char[0] = cor_char[1]        
+        cor_char[1] = cor_char[2]        
+        cor_char[2] = tmp
+
+    return cor_char
 
 
 class Edge(IntEnum):
@@ -130,14 +144,50 @@ class Edge(IntEnum):
     UR = 1; RU = 13
     UF = 2; FU = 14
     UL = 3; LU = 15
-    LB = 4; BL = 16
-    RB = 5; BR = 17
-    RF = 6; FR = 18
-    LF = 7; FL = 19
-    DF = 8; FD = 20
-    DR = 9; RD = 21
-    DB = 10; BD = 22
-    DL = 11; LD = 23
+    DB = 4; BD = 16
+    DL = 5; LD = 17
+    DF = 6; FD = 18
+    DR = 7; RD = 19
+    RB = 8; BR = 20
+    RF = 9; FR = 21
+    LF = 10; FL = 22
+    LB = 11; BL = 23
+
+def edge_to_char(edge):
+    eg = edge%12
+    eg_char = []
+    if eg == Edge.UB:
+        eg_char = ['U', 'B']
+    elif eg == Edge.UR:
+        eg_char = ['U', 'R']
+    elif eg == Edge.UF:
+        eg_char = ['U', 'F']
+    elif eg == Edge.UL:
+        eg_char = ['U', 'L']
+    elif eg == Edge.LB:
+        eg_char = ['L', 'B']
+    elif eg == Edge.RB:
+        eg_char = ['R', 'B']
+    elif eg == Edge.RF:
+        eg_char = ['R', 'F']
+    elif eg == Edge.LF:
+        eg_char = ['L', 'F']
+    elif eg == Edge.DF:
+        eg_char = ['D', 'F']
+    elif eg == Edge.DR:
+        eg_char = ['D', 'R']
+    elif eg == Edge.DB:
+        eg_char = ['D', 'B']
+    elif eg == Edge.DL:
+        eg_char = ['D', 'L']
+
+    eg_ori = edge//12
+    if eg_ori == 1:
+        tmp = eg_char[0]
+        eg_char[0] = eg_char[1]
+        eg_char[1] = tmp
+    
+    return eg_char
 
 
 class CornerColor(IntEnum): 
@@ -166,8 +216,6 @@ class EdgeColor(IntEnum):
     GO = 11
 
 
-import sys
 # unit testing
 if __name__ == "__main__":
-    a = Edge.UB
-    print(a)
+    pass

@@ -2,10 +2,10 @@ import numpy as np
 import os.path
 import random
 from array import array
+from cube import Cube
 from calc_move_table import MoveTable
 import rank
 from cube_model import MoveSpace as MS
-
 
 def print_move(move_num):
     for move in MS:
@@ -42,10 +42,8 @@ def stage2_move(state, move):
     state[2] = ud_perm_table[state[2]][move]
 
 def shuffle(N):
-    cube = MoveTable()
+    cube = Cube()
     move_list = cube.shuffle(N)
-    #for move in move_list:
-    #    print_move(move)
 
     co_ori = rank.co_ori(cube.get_co_ori())
     eg_ori = rank.eg_ori(cube.get_eg_ori())
@@ -54,7 +52,7 @@ def shuffle(N):
     return array('I', [co_ori, eg_ori, ud_edges]), move_list, cube
 
 def verify():
-    cube = MoveTable()
+    cube = Cube()
     move_list = cube.shuffle(1000)
 
     expected_co_ori = rank.co_ori(cube.get_co_ori())
@@ -62,13 +60,11 @@ def verify():
     expected_ud_edges = rank.ud_edges(cube.get_ud_edges())
 
     state = array('I', [0, 0, 0]) # a new cube
-    #print(getsizeof(state))
     for move in move_list:
         stage1_move(state, move)
     
     print(expected_co_ori, expected_eg_ori, expected_ud_edges)
     print(state)
-    #print(getsizeof(state))
 
 if __name__ == "__main__":
     verify()

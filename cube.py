@@ -1,85 +1,290 @@
 import numpy as np
-import os.path
 import random
 from time import time
 from cube_model import MoveSpace as MS
 from cube_model import G1Space
-from calc_move_table import MoveTable
+from cube_model import Facelets, conor_to_char, edge_to_char
+import rank
 
 class Cube:
-    def __init__(self, corners = bytearray(range(8)), edges = bytearray(range(12))):
+    def __init__(self, cube_str = None):
         ''' Default position is solved, but can be changed to anything. '''
-        self.corners = corners
+        if cube_str == None:
+            self.corners = bytearray(range(8))
+            self.edges = bytearray(range(12))
+        else:
+            self.corners = self.read_corners(cube_str)
+            self.edges = self.read_edges(cube_str)
 
-        # split edges into two sets
-        self.edges1 = edges[:6]
-        self.edges2 = edges[6:]
+    def swap(self, arr, idx1, idx2):
+        tmp = arr[idx1]
+        arr[idx1] = arr[idx2]
+        arr[idx2] = tmp
 
-        # make a move table if it doesn't exist
-        if not os.path.exists("table/move_table_corner.npy") or not os.path.exists("table/move_table_edge.npy"):
-            move_table = MoveTable()
-            move_table.make_tables()
+    def permute(self, arr, idx1, idx2, idx3, idx4):
+        tmp = arr[idx4]
+        arr[idx4] = arr[idx3]
+        arr[idx3] = arr[idx2]
+        arr[idx2] = arr[idx1]
+        arr[idx1] = tmp
 
-        # load move_table
-        self.corner_table = np.load("table/move_table_corner.npy").tolist()
-        self.edge_table = np.load("table/move_table_edge.npy").tolist()
+    def rotateCorner(self, idx, stops):
+        self.corners[idx] = (self.corners[idx]+stops*8)%24
 
-    def move_corners(self, corners, move):
-        ct = self.corner_table[move]
-        corners[0] = ct[corners[0]]
-        corners[1] = ct[corners[1]]
-        corners[2] = ct[corners[2]]
-        corners[3] = ct[corners[3]]
-        corners[4] = ct[corners[4]]
-        corners[5] = ct[corners[5]]
-        corners[6] = ct[corners[6]]
-        corners[7] = ct[corners[7]]
+    def flipEdge(self, idx):
+        self.edges[idx] = (self.edges[idx]+12)%24
 
-    def move_edges1(self, edges1, move):
-        et = self.edge_table[move]
-        edges1[0] = et[edges1[0]]
-        edges1[1] = et[edges1[1]]
-        edges1[2] = et[edges1[2]]
-        edges1[3] = et[edges1[3]]
-        edges1[4] = et[edges1[4]]
-        edges1[5] = et[edges1[5]]
+    def u1(self):
+        '''
+        0 1 2 3 corner
+        0 1 2 3 edge
+        '''
+        self.permute(self.corners, 0, 1, 2 ,3)
+        self.permute(self.edges, 0, 1, 2, 3)
 
-    def move_edges2(self, edges2, move):
-        et = self.edge_table[move]
-        edges2[0] = et[edges2[0]]
-        edges2[1] = et[edges2[1]]
-        edges2[2] = et[edges2[2]]
-        edges2[3] = et[edges2[3]]
-        edges2[4] = et[edges2[4]]
-        edges2[5] = et[edges2[5]]
+    def u2(self):
+        self.swap(self.corners, 0, 2)
+        self.swap(self.corners, 1, 3)
+        self.swap(self.edges, 0, 2)
+        self.swap(self.edges, 1, 3)
 
-    def move(self, move):
-        ct = self.corner_table[move]
-        self.corners[0] = ct[self.corners[0]]
-        self.corners[1] = ct[self.corners[1]]
-        self.corners[2] = ct[self.corners[2]]
-        self.corners[3] = ct[self.corners[3]]
-        self.corners[4] = ct[self.corners[4]]
-        self.corners[5] = ct[self.corners[5]]
-        self.corners[6] = ct[self.corners[6]]
-        self.corners[7] = ct[self.corners[7]]
+    def u3(self):
+        self.permute(self.corners, 3, 2, 1, 0)
+        self.permute(self.edges, 3, 2, 1, 0)
 
-        et = self.edge_table[move]
-        self.edges1[0] = et[self.edges1[0]]
-        self.edges1[1] = et[self.edges1[1]]
-        self.edges1[2] = et[self.edges1[2]]
-        self.edges1[3] = et[self.edges1[3]]
-        self.edges1[4] = et[self.edges1[4]]
-        self.edges1[5] = et[self.edges1[5]]
+    def d1(self):
+        '''
+        4 5 6 7
+        4 5 6 7
+        '''
+        self.permute(self.corners, 4, 5, 6, 7)
+        self.permute(self.edges, 4, 5, 6, 7)
 
-        self.edges2[0] = et[self.edges2[0]]
-        self.edges2[1] = et[self.edges2[1]]
-        self.edges2[2] = et[self.edges2[2]]
-        self.edges2[3] = et[self.edges2[3]]
-        self.edges2[4] = et[self.edges2[4]]
-        self.edges2[5] = et[self.edges2[5]]
-    
+    def d2(self):
+        self.swap(self.corners, 4, 6)
+        self.swap(self.corners, 5, 7)
+        self.swap(self.edges, 4, 6)
+        self.swap(self.edges, 5, 7)
+
+    def d3(self):
+        self.permute(self.corners, 7, 6, 5, 4)
+        self.permute(self.edges, 7, 6, 5, 4)
+
+    def l1(self):
+        '''
+        0 3 4 7 corner
+        3 10 5 11 edge
+        '''
+        self.permute(self.corners, 0, 3, 4, 7)
+        self.permute(self.edges, 3, 10, 5, 11)
+        self.rotateCorner(0, 2)
+        self.rotateCorner(3, 1)
+        self.rotateCorner(4, 2)
+        self.rotateCorner(7, 1)
+        self.flipEdge(3)
+        self.flipEdge(10)
+        self.flipEdge(5)
+        self.flipEdge(11)
+
+    def l2(self):
+        self.swap(self.corners, 0, 4)
+        self.swap(self.corners, 3, 7)
+        self.swap(self.edges, 3, 5)
+        self.swap(self.edges, 10, 11)
+
+    def l3(self):
+        self.permute(self.corners, 7, 4, 3, 0)
+        self.permute(self.edges, 11, 5, 10, 3)
+        self.rotateCorner(0, 2)
+        self.rotateCorner(3, 1)
+        self.rotateCorner(4, 2)
+        self.rotateCorner(7, 1)
+        self.flipEdge(3)
+        self.flipEdge(10)
+        self.flipEdge(5)
+        self.flipEdge(11)
+
+    def r1(self):
+        '''
+        1 6 5 2 corner
+        1 8 7 9 edge
+        '''
+        self.permute(self.corners, 1, 6, 5, 2)
+        self.permute(self.edges, 1, 8, 7, 9)
+        self.rotateCorner(1, 1)
+        self.rotateCorner(6, 2)
+        self.rotateCorner(5, 1)
+        self.rotateCorner(2, 2)
+        self.flipEdge(1)
+        self.flipEdge(8)
+        self.flipEdge(7)
+        self.flipEdge(9)
+
+    def r2(self):
+        self.swap(self.corners, 1, 5)
+        self.swap(self.corners, 6, 2)
+        self.swap(self.edges, 1, 7)
+        self.swap(self.edges, 8, 9)
+
+    def r3(self):
+        self.permute(self.corners, 2, 5, 6, 1)
+        self.permute(self.edges, 9, 7, 8, 1)
+        self.rotateCorner(1, 1)
+        self.rotateCorner(6, 2)
+        self.rotateCorner(5, 1)
+        self.rotateCorner(2, 2)
+        self.flipEdge(1)
+        self.flipEdge(8)
+        self.flipEdge(7)
+        self.flipEdge(9)
+
+    def f1(self):
+        '''
+        2 5 4 3
+        2 9 6 10
+        '''
+        self.permute(self.corners, 2, 5, 4, 3)
+        self.permute(self.edges, 2, 9, 6, 10)
+        self.rotateCorner(2, 1)
+        self.rotateCorner(5, 2)
+        self.rotateCorner(4, 1)
+        self.rotateCorner(3, 2)
+
+    def f2(self):
+        self.swap(self.corners, 2, 4)
+        self.swap(self.corners, 5, 3)
+        self.swap(self.edges, 2, 6)
+        self.swap(self.edges, 9, 10)
+
+    def f3(self):
+        self.permute(self.corners, 3, 4, 5, 2)
+        self.permute(self.edges, 10, 6, 9, 2)
+        self.rotateCorner(2, 1)
+        self.rotateCorner(5, 2)
+        self.rotateCorner(4, 1)
+        self.rotateCorner(3, 2)
+
+    def b1(self):
+        '''
+        0 7 6 1
+        0 11 4 8
+        '''
+        self.permute(self.corners, 0, 7, 6, 1)
+        self.permute(self.edges, 0, 11, 4, 8)
+        self.rotateCorner(0, 1)
+        self.rotateCorner(7, 2)
+        self.rotateCorner(6, 1)
+        self.rotateCorner(1, 2)
+
+    def b2(self):
+        self.swap(self.corners, 0, 6)
+        self.swap(self.corners, 7, 1)
+        self.swap(self.edges, 0, 4)
+        self.swap(self.edges, 11, 8)
+
+    def b3(self):
+        self.permute(self.corners, 1, 6, 7, 0)
+        self.permute(self.edges, 8, 4, 11, 0)
+        self.rotateCorner(0, 1)
+        self.rotateCorner(7, 2)
+        self.rotateCorner(6, 1)
+        self.rotateCorner(1, 2)
+
+    def move(self, command):
+        if command == MS.U1:
+            self.u1()
+        elif command == MS.U2:
+            self.u2()
+        elif command == MS.U3:
+            self.u3()
+        elif command == MS.L1:
+            self.l1()
+        elif command == MS.L2:
+            self.l2()
+        elif command == MS.L3:
+            self.l3()
+        elif command == MS.F1:
+            self.f1()
+        elif command == MS.F2:
+            self.f2()
+        elif command == MS.F3:
+            self.f3()
+        elif command == MS.R1:
+            self.r1()
+        elif command == MS.R2:
+            self.r2()
+        elif command == MS.R3:
+            self.r3()
+        elif command == MS.B1:
+            self.b1()
+        elif command == MS.B2:
+            self.b2()
+        elif command == MS.B3:
+            self.b3()
+        elif command == MS.D1:
+            self.d1()
+        elif command == MS.D2:
+            self.d2()
+        elif command == MS.D3:
+            self.d3()
+
+    def get_co_ori(self):
+        co_ori = [0]*8
+        for i, co in enumerate(self.corners):
+            co_ori[i] = co//8
+        return co_ori
+
+    def set_co_ori(self, co_ori):
+        for i, co in enumerate(self.corners):
+            self.corners[i] = co%8+co_ori[i]*8
+
+    def get_eg_ori(self):
+        eg_ori = [0]*12
+        for i, co in enumerate(self.edges):
+            eg_ori[i] = co//12
+        return eg_ori
+
+    def set_eg_ori(self, eg_ori):
+        for i, co in enumerate(self.edges):
+            self.edges[i] = co%12+eg_ori[i]*12
+
+    def get_ud_edges(self):
+        ud_edges = [0]*12
+        for i, eg in enumerate(self.edges):
+            if eg%12 >= 8:
+                ud_edges[i] = eg%12
+        return ud_edges
+
+    def set_ud_egdes(self, ud_edges):
+        self.edges = ud_edges.copy()
+
+    def get_co_perm(self):
+        return [co%8 for co in self.corners]
+
+    def set_co_perm(self, co_perm):
+        self.corners = co_perm.copy()
+
+    def get_eg_perm(self):
+        return [eg%12 for eg in self.edges[:8]] 
+
+    def set_eg_perm(self, eg_perm):
+        self.edges[:8] = eg_perm.copy()
+
+    def get_ud_perm(self):
+        return [eg%12 for eg in self.edges[8:]]
+
+    def set_ud_perm(self, ud_perm):
+        self.edges[8:] = ud_perm.copy()
+
     def shuffle(self, N):
+        move_list = []
+        for _ in range(N):
+            rand_move = random.randrange(18)
+            self.move(rand_move)
+            move_list.append(rand_move)
+        return move_list
+
+    def shuffle_G1(self, N):
         move_list = []
         for _ in range(N):
             rand_move = random.sample(list(G1Space), 1)[0]
@@ -87,17 +292,41 @@ class Cube:
             move_list.append(rand_move)
         return move_list
 
+    def __str__(self):
+        cube_str = ['']*54
+        cube_str[Facelets.U5] = 'U'
+        cube_str[Facelets.L5] = 'L'
+        cube_str[Facelets.F5] = 'F'
+        cube_str[Facelets.R5] = 'R'
+        cube_str[Facelets.B5] = 'B'
+        cube_str[Facelets.D5] = 'D'
+        cube_str[Facelets.U1], cube_str[Facelets.B3], cube_str[Facelets.L1] = conor_to_char(self.corners[0])
+        cube_str[Facelets.U3], cube_str[Facelets.R3], cube_str[Facelets.B1] = conor_to_char(self.corners[1])
+        cube_str[Facelets.U9], cube_str[Facelets.F3], cube_str[Facelets.R1] = conor_to_char(self.corners[2])
+        cube_str[Facelets.U7], cube_str[Facelets.L3], cube_str[Facelets.F1] = conor_to_char(self.corners[3])
+        cube_str[Facelets.D1], cube_str[Facelets.F7], cube_str[Facelets.L9] = conor_to_char(self.corners[4])
+        cube_str[Facelets.D3], cube_str[Facelets.R7], cube_str[Facelets.F9] = conor_to_char(self.corners[5])
+        cube_str[Facelets.D9], cube_str[Facelets.B7], cube_str[Facelets.R9] = conor_to_char(self.corners[6])
+        cube_str[Facelets.D7], cube_str[Facelets.L7], cube_str[Facelets.B9] = conor_to_char(self.corners[7])
+        cube_str[Facelets.U2], cube_str[Facelets.B2] = edge_to_char(self.edges[0])
+        cube_str[Facelets.U6], cube_str[Facelets.R2] = edge_to_char(self.edges[1])
+        cube_str[Facelets.U8], cube_str[Facelets.F2] = edge_to_char(self.edges[2])
+        cube_str[Facelets.U4], cube_str[Facelets.L2] = edge_to_char(self.edges[3])
+        cube_str[Facelets.D8], cube_str[Facelets.B8] = edge_to_char(self.edges[4])
+        cube_str[Facelets.D4], cube_str[Facelets.L8] = edge_to_char(self.edges[5])
+        cube_str[Facelets.D2], cube_str[Facelets.F8] = edge_to_char(self.edges[6])
+        cube_str[Facelets.D6], cube_str[Facelets.R8] = edge_to_char(self.edges[7])
+        cube_str[Facelets.R6], cube_str[Facelets.B4] = edge_to_char(self.edges[8])
+        cube_str[Facelets.R4], cube_str[Facelets.F6] = edge_to_char(self.edges[9])
+        cube_str[Facelets.L6], cube_str[Facelets.F4] = edge_to_char(self.edges[10])
+        cube_str[Facelets.L4], cube_str[Facelets.B6] = edge_to_char(self.edges[11])
+        return "".join(cube_str)
 
-def random_client(N):
+def verify(N):
     cube = Cube()
-    moves = []
     start_time = time()
-    for _ in range(N):
-        new_move = random.randrange(0, 18)
-        #new_move = random.sample([0, 1, 2, 3, 4, 5, 6, 7, 8, 17], 1)[0]
-        cube.move(new_move)
-        moves.append(new_move)
-    print(list(cube.corners), list(cube.edges1), list(cube.edges2))
+    moves = cube.shuffle(N)
+    print(list(cube.corners), list(cube.edges))
     print(N, "random moves took", round(time()-start_time, 2), "seconds")
 
     for move in reversed(moves):
@@ -106,11 +335,10 @@ def random_client(N):
         elif move in [2, 5, 8, 11, 14, 17]:
             move -= 2
         cube.move(move)
-    print(list(cube.corners), list(cube.edges1), list(cube.edges2))
+    print(list(cube.corners), list(cube.edges))
     print("After reversing, the entire operation took", round(time()-start_time, 2), "seconds")
 
 if __name__ == "__main__":
-    #random_client(1000)
     cube = Cube()
-    cube.shuffle(1000000)
+    print(cube)
     pass
