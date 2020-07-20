@@ -51,6 +51,20 @@ def shuffle(N):
 
     return array('I', [co_ori, eg_ori, ud_edges]), move_list, cube
 
+def cube_from_str(cube_str):
+    cube = Cube(cube_str=cube_str)
+    co_ori = rank.co_ori(cube.get_co_ori())
+    eg_ori = rank.eg_ori(cube.get_eg_ori())
+    ud_edges = rank.ud_edges(cube.get_ud_edges())
+    return array('I', [co_ori, eg_ori, ud_edges]), cube
+
+def cube_from_scramble(scramble):
+    cube = Cube(cube_scramble=scramble)
+    co_ori = rank.co_ori(cube.get_co_ori())
+    eg_ori = rank.eg_ori(cube.get_eg_ori())
+    ud_edges = rank.ud_edges(cube.get_ud_edges())
+    return array('I', [co_ori, eg_ori, ud_edges]), cube
+
 def verify():
     cube = Cube()
     move_list = cube.shuffle(1000)

@@ -4,12 +4,19 @@ import random
 from copy import copy, deepcopy
 from time import time
 import os.path
+import argparse
 import rank
 from cube_model import MoveSpace as MS
 from cube_model import G1Space
 import move_coord
 import calc_move_table
 import permute
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-s", "--str", type=str, help="cube string")
+parser.add_argument("-m", "--moves", type=str, help="cube scramble")
+parser.add_argument("-d", "--display", action="store_true", help="print out solve")
+args = parser.parse_args()
 
 def print_move(move_num):
     for move in MS:
@@ -56,7 +63,12 @@ time_list = []
 for _ in range(num_of_solves):
 
     # iterative deepening depth-first search
-    init_state, shuffle_list, init_cube = move_coord.shuffle(num_of_shuffles)
+    if args.str != None:
+        init_state, init_cube = move_coord.cube_from_str(args.str)
+    elif args.moves != None:
+        init_state, init_cube = move_coord.cube_from_scramble(args.moves)
+    else:
+        init_state, shuffle_list, init_cube = move_coord.shuffle(num_of_shuffles)
     init_state.append(255) # use 255 to denote the -1st move
     init_state.append(0) # takes 0 moves to get there
     # init_state = [co_ori, eg_ori, ud_edges, last_move, depth]
@@ -67,6 +79,8 @@ for _ in range(num_of_solves):
     times_failed = 0
     solution_found = False
     solution = []
+
+    last_move_lists = []
     while not solution_found:
         state = copy(init_state)
         cube = deepcopy(init_cube)
@@ -88,10 +102,19 @@ for _ in range(num_of_solves):
 
                 if cur_depth == max_depth:
                     if is_goal(cur_state):
+                        move_list1 = list(move_stack)[1:cur_depth+1]
+                        same_solve = False
+                        for last_list in last_move_lists:
+                            if move_list1 == last_list:
+                                same_solve = True
+                                break
+                        if same_solve:
+                            print("same solve")
+                            continue
+                        # unique solve
+                        last_move_lists.append(move_list1)
                         stage1_min = cur_depth # set min depth
                         print("stage1 victory", cur_depth)
-                        for _ in range(cur_depth):
-                            move_list1.insert(0, move_stack.pop())
                         state = cur_state
                         first_phase_complete = True
                         break
@@ -146,8 +169,7 @@ for _ in range(num_of_solves):
                 if cur_depth == max_depth:
                     if is_goal(cur_state):
                         print("stage2 victory", cur_depth)
-                        for _ in range(cur_depth):
-                            move_list2.insert(0, move_stack.pop())
+                        move_list2 = list(move_stack)[1:cur_depth+1]
                         second_phase_complete = True
                         break
                 else:
@@ -189,6 +211,9 @@ for _ in range(num_of_solves):
                 stage1_min += 1
             stage1_min = min(stage1_min, 12) # can't be greater than 12
 
+    if args.display:
+        for move in solution:
+            print_move(move)
     print("total moves:", len(solution), "took", time() - start_time)
     time_list.append(time() - start_time)
 

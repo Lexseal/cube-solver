@@ -1,20 +1,24 @@
 import numpy as np
 import random
 from time import time
+import argparse
 from cube_model import MoveSpace as MS
 from cube_model import G1Space
-from cube_model import Facelets, conor_to_char, edge_to_char
+from cube_model import Facelets
+from cube_model import conor_to_char, edge_to_char
+from cube_model import str_to_cor, str_to_eg
+from cube_model import convert_move
 import rank
 
 class Cube:
-    def __init__(self, cube_str = None):
+    def __init__(self, cube_str = None, cube_scramble = None):
         ''' Default position is solved, but can be changed to anything. '''
-        if cube_str == None:
-            self.corners = bytearray(range(8))
-            self.edges = bytearray(range(12))
-        else:
-            self.corners = self.read_corners(cube_str)
-            self.edges = self.read_edges(cube_str)
+        self.corners = bytearray(range(8))
+        self.edges = bytearray(range(12))
+        if cube_str != None:
+            self.read_str(cube_str)
+        elif cube_scramble != None:
+            self.read_scramble(cube_scramble)
 
     def swap(self, arr, idx1, idx2):
         tmp = arr[idx1]
@@ -322,6 +326,33 @@ class Cube:
         cube_str[Facelets.L4], cube_str[Facelets.B6] = edge_to_char(self.edges[11])
         return "".join(cube_str)
 
+    def read_str(self, cube_str):
+        self.corners[0] = str_to_cor(cube_str[Facelets.U1]+cube_str[Facelets.B3]+cube_str[Facelets.L1])
+        self.corners[1] = str_to_cor(cube_str[Facelets.U3]+cube_str[Facelets.R3]+cube_str[Facelets.B1])
+        self.corners[2] = str_to_cor(cube_str[Facelets.U9]+cube_str[Facelets.F3]+cube_str[Facelets.R1])
+        self.corners[3] = str_to_cor(cube_str[Facelets.U7]+cube_str[Facelets.L3]+cube_str[Facelets.F1])
+        self.corners[4] = str_to_cor(cube_str[Facelets.D1]+cube_str[Facelets.F7]+cube_str[Facelets.L9])
+        self.corners[5] = str_to_cor(cube_str[Facelets.D3]+cube_str[Facelets.R7]+cube_str[Facelets.F9])
+        self.corners[6] = str_to_cor(cube_str[Facelets.D9]+cube_str[Facelets.B7]+cube_str[Facelets.R9])
+        self.corners[7] = str_to_cor(cube_str[Facelets.D7]+cube_str[Facelets.L7]+cube_str[Facelets.B9])
+        self.edges[0] = str_to_eg(cube_str[Facelets.U2]+cube_str[Facelets.B2])
+        self.edges[1] = str_to_eg(cube_str[Facelets.U6]+cube_str[Facelets.R2])
+        self.edges[2] = str_to_eg(cube_str[Facelets.U8]+cube_str[Facelets.F2])
+        self.edges[3] = str_to_eg(cube_str[Facelets.U4]+cube_str[Facelets.L2])
+        self.edges[4] = str_to_eg(cube_str[Facelets.D8]+cube_str[Facelets.B8])
+        self.edges[5] = str_to_eg(cube_str[Facelets.D4]+cube_str[Facelets.L8])
+        self.edges[6] = str_to_eg(cube_str[Facelets.D2]+cube_str[Facelets.F8])
+        self.edges[7] = str_to_eg(cube_str[Facelets.D6]+cube_str[Facelets.R8])
+        self.edges[8] = str_to_eg(cube_str[Facelets.R6]+cube_str[Facelets.B4])
+        self.edges[9] = str_to_eg(cube_str[Facelets.R4]+cube_str[Facelets.F6])
+        self.edges[10] = str_to_eg(cube_str[Facelets.L6]+cube_str[Facelets.F4])
+        self.edges[11] = str_to_eg(cube_str[Facelets.L4]+cube_str[Facelets.B6])
+
+    def read_scramble(self, cube_scramble):
+        scramble_list = cube_scramble.split(" ")
+        for move in scramble_list:
+            self.move(convert_move(move))
+
 def verify(N):
     cube = Cube()
     start_time = time()
@@ -339,6 +370,14 @@ def verify(N):
     print("After reversing, the entire operation took", round(time()-start_time, 2), "seconds")
 
 if __name__ == "__main__":
-    cube = Cube()
-    print(cube)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-s", "--str", type=str, help="cube string")
+    parser.add_argument("-m", "--moves", type=str, help="cube scramble")
+    args = parser.parse_args()
+    if args.str != None:
+        cube = Cube(cube_str=args.str)
+        print(cube)
+    elif args.moves != None:
+        cube = Cube(cube_scramble=args.moves)
+        print(cube)
     pass

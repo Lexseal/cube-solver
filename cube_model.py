@@ -74,6 +74,35 @@ class MoveSpace(IntEnum):
     B1 = 12; B2 = 13; B3 = 14
     D1 = 15; D2 = 16; D3 = 17
 
+move_lookup = []
+move_lookup.append("U1")
+move_lookup.append("U2")
+move_lookup.append("U3")
+move_lookup.append("L1")
+move_lookup.append("L2")
+move_lookup.append("L3")
+move_lookup.append("F1")
+move_lookup.append("F2")
+move_lookup.append("F3")
+move_lookup.append("R1")
+move_lookup.append("R2")
+move_lookup.append("R3")
+move_lookup.append("B1")
+move_lookup.append("B2")
+move_lookup.append("B3")
+move_lookup.append("D1")
+move_lookup.append("D2")
+move_lookup.append("D3")
+move_reverse_loopup = {}
+for i, move in enumerate(move_lookup):
+    move_reverse_loopup[move] = i
+def convert_move(move):
+    if (len(move) == 1):
+        move += "1"
+    elif (move[1] == "'"):
+        move = move[0]+"3"
+    return move_reverse_loopup[move]
+
 
 class G1Space(IntEnum):
     '''
@@ -103,39 +132,46 @@ class Corner(IntEnum):
     DBR = 6; RDB = 14; BRD = 22
     DLB = 7; BDL = 15; LBD = 23
 
+cor_char_lookup = []
+cor_char_lookup.append(['U', 'B', 'L'])
+cor_char_lookup.append(['U', 'R', 'B'])
+cor_char_lookup.append(['U', 'F', 'R'])
+cor_char_lookup.append(['U', 'L', 'F'])
+cor_char_lookup.append(['D', 'F', 'L'])
+cor_char_lookup.append(['D', 'R', 'F'])
+cor_char_lookup.append(['D', 'B', 'R'])
+cor_char_lookup.append(['D', 'L', 'B'])
 def conor_to_char(corner):
     cor = corner%8
-    cor_char = []
-    if cor == Corner.UBL:
-        cor_char = ['U', 'B', 'L']
-    elif cor == Corner.URB:
-        cor_char = ['U', 'R', 'B']
-    elif cor == Corner.UFR:
-        cor_char = ['U', 'F', 'R']
-    elif cor == Corner.ULF:
-        cor_char = ['U', 'L', 'F']
-    elif cor == Corner.DFL:
-        cor_char = ['D', 'F', 'L']
-    elif cor == Corner.DRF:
-        cor_char = ['D', 'R', 'F']
-    elif cor == Corner.DBR:
-        cor_char = ['D', 'B', 'R']
-    elif cor == Corner.DLB:
-        cor_char = ['D', 'L', 'B']
+    cor_char = cor_char_lookup[cor]
 
     cor_ori = corner//8
     if cor_ori == 1:
-        tmp = cor_char = cor_char[2]
+        tmp = cor_char[2]
         cor_char[2] = cor_char[1]        
         cor_char[1] = cor_char[0]        
         cor_char[0] = tmp
     elif cor_ori == 2:
-        tmp = cor_char = cor_char[0]
+        tmp = cor_char[0]
         cor_char[0] = cor_char[1]        
         cor_char[1] = cor_char[2]        
         cor_char[2] = tmp
 
     return cor_char
+
+cor_num_loopup = {}
+for i, chars in enumerate(cor_char_lookup):
+    cor_num_loopup["".join(chars)] = i
+def str_to_cor(cor_str):
+    # reverse rotate
+    cor_str_1stop = cor_str[1:3]+cor_str[0:1]
+    cor_str_2stop = cor_str[2:3]+cor_str[0:2]
+    if cor_str in cor_num_loopup:
+        return cor_num_loopup[cor_str]
+    elif cor_str_1stop in cor_num_loopup:
+        return cor_num_loopup[cor_str_1stop]+8
+    elif cor_str_2stop in cor_num_loopup:
+        return cor_num_loopup[cor_str_2stop]+16
 
 
 class Edge(IntEnum):
@@ -153,33 +189,24 @@ class Edge(IntEnum):
     LF = 10; FL = 22
     LB = 11; BL = 23
 
+eg_char_loopup = []
+eg_char_loopup.append(['U', 'B'])
+eg_char_loopup.append(['U', 'R'])
+eg_char_loopup.append(['U', 'F'])
+eg_char_loopup.append(['U', 'L'])
+eg_char_loopup.append(['D', 'B'])
+eg_char_loopup.append(['D', 'L'])
+eg_char_loopup.append(['D', 'F'])
+eg_char_loopup.append(['D', 'R'])
+eg_char_loopup.append(['R', 'B'])
+eg_char_loopup.append(['R', 'F'])
+eg_char_loopup.append(['L', 'F'])
+eg_char_loopup.append(['L', 'B'])
+
+
 def edge_to_char(edge):
     eg = edge%12
-    eg_char = []
-    if eg == Edge.UB:
-        eg_char = ['U', 'B']
-    elif eg == Edge.UR:
-        eg_char = ['U', 'R']
-    elif eg == Edge.UF:
-        eg_char = ['U', 'F']
-    elif eg == Edge.UL:
-        eg_char = ['U', 'L']
-    elif eg == Edge.LB:
-        eg_char = ['L', 'B']
-    elif eg == Edge.RB:
-        eg_char = ['R', 'B']
-    elif eg == Edge.RF:
-        eg_char = ['R', 'F']
-    elif eg == Edge.LF:
-        eg_char = ['L', 'F']
-    elif eg == Edge.DF:
-        eg_char = ['D', 'F']
-    elif eg == Edge.DR:
-        eg_char = ['D', 'R']
-    elif eg == Edge.DB:
-        eg_char = ['D', 'B']
-    elif eg == Edge.DL:
-        eg_char = ['D', 'L']
+    eg_char = eg_char_loopup[eg]
 
     eg_ori = edge//12
     if eg_ori == 1:
@@ -189,33 +216,19 @@ def edge_to_char(edge):
     
     return eg_char
 
-
-class CornerColor(IntEnum): 
-    BYO = 0
-    BRY = 1
-    BWR = 2
-    BOW = 3
-    GWO = 4
-    GRW = 5
-    GYR = 6
-    GOY = 7
-
-
-class EdgeColor(IntEnum):
-    BY = 0
-    BR = 1
-    BW = 2
-    BO = 3
-    OY = 4
-    RY = 5
-    RW = 6
-    OW = 7
-    GW = 8
-    GR = 9
-    GY = 10
-    GO = 11
+eg_num_loopup = {}
+for i, chars in enumerate(eg_char_loopup):
+    eg_num_loopup["".join(chars)] = i
+def str_to_eg(eg_str):
+    # flip
+    eg_flip = eg_str[1:2]+eg_str[0:1]
+    if eg_str in eg_num_loopup:
+        return eg_num_loopup[eg_str]
+    elif eg_flip in eg_num_loopup:
+        return eg_num_loopup[eg_flip]+12
 
 
 # unit testing
 if __name__ == "__main__":
+    print(str_to_eg("RD"))
     pass
