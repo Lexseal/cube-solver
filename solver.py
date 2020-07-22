@@ -65,8 +65,10 @@ for _ in range(num_of_solves):
     # iterative deepening depth-first search
     if args.str != None:
         init_state, init_cube = move_coord.cube_from_str(args.str)
+        num_of_solves = 1
     elif args.moves != None:
         init_state, init_cube = move_coord.cube_from_scramble(args.moves)
+        num_of_solves = 1
     else:
         init_state, shuffle_list, init_cube = move_coord.shuffle(num_of_shuffles)
     init_state.append(255) # use 255 to denote the -1st move
