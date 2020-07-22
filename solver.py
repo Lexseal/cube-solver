@@ -58,6 +58,7 @@ def is_goal(state):
 max_move = 23
 num_of_shuffles = 100
 num_of_solves = 100
+one_solve = False
 
 time_list = []
 for _ in range(num_of_solves):
@@ -65,10 +66,10 @@ for _ in range(num_of_solves):
     # iterative deepening depth-first search
     if args.str != None:
         init_state, init_cube = move_coord.cube_from_str(args.str)
-        num_of_solves = 1
+        one_solve = True
     elif args.moves != None:
         init_state, init_cube = move_coord.cube_from_scramble(args.moves)
-        num_of_solves = 1
+        one_solve = True
     else:
         init_state, shuffle_list, init_cube = move_coord.shuffle(num_of_shuffles)
     init_state.append(255) # use 255 to denote the -1st move
@@ -218,5 +219,8 @@ for _ in range(num_of_solves):
             print_move(move)
     print("total moves:", len(solution), "took", time() - start_time)
     time_list.append(time() - start_time)
+    
+    if one_solve:
+        break
 
 print(sum(time_list)/len(time_list))
