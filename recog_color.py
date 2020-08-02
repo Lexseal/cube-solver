@@ -90,11 +90,11 @@ def scan():
                             if square == original:
                                 face[i] = replace_with
                 for i, face in enumerate(cube_num):
-                    print(face)
+                    #print(face)
                     cube_num[i] = "".join(face)
                 cube_str = "".join(cube_num)
                 os.system("./reverse_cam.sh")
-                print(cube_str)
+                #print(cube_str)
                 return cube_str
                 break
 

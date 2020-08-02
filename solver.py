@@ -77,6 +77,7 @@ for _ in range(num_of_solves):
     elif args.camera:
         import recog_color
         cube_str = recog_color.scan()
+        print(cube_str)
         init_state, init_cube = move_coord.cube_from_str(cube_str)
         one_solve = True
     else:
