@@ -1,0 +1,28 @@
+python3 solver.py -s "UUUUUULFRLLDDLDDRDFRBLFFFRLUFFLRBURDRBBLBBBDBRUFBDDRFL" -d
+stage1 victory 9
+stage2 victory 14
+MoveSpace.D3
+MoveSpace.F2
+MoveSpace.R1
+MoveSpace.D1
+MoveSpace.U3
+MoveSpace.R2
+MoveSpace.B3
+MoveSpace.D2
+MoveSpace.R3
+MoveSpace.D1
+MoveSpace.U2
+MoveSpace.R2
+MoveSpace.U2
+MoveSpace.L2
+MoveSpace.B2
+MoveSpace.U3
+MoveSpace.F2
+MoveSpace.U3
+MoveSpace.B2
+MoveSpace.D1
+MoveSpace.R2
+MoveSpace.L2
+MoveSpace.B2
+total moves: 23 took 1.3251161575317383
+1.3251259326934814

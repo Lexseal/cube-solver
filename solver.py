@@ -11,11 +11,14 @@ from cube_model import G1Space
 import move_coord
 import calc_move_table
 import permute
+import recog_color
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--str", type=str, help="cube string")
 parser.add_argument("-m", "--moves", type=str, help="cube scramble")
 parser.add_argument("-d", "--display", action="store_true", help="print out solve")
+parser.add_argument("-n", "--number", type=int, help="number of solves")
+parser.add_argument("-c", "--camera", action="store_true", help="solve from camera")
 args = parser.parse_args()
 
 def print_move(move_num):
@@ -59,6 +62,8 @@ max_move = 23
 num_of_shuffles = 100
 num_of_solves = 100
 one_solve = False
+if args.number != None:
+    num_of_solves = args.number
 
 time_list = []
 for _ in range(num_of_solves):
@@ -69,6 +74,10 @@ for _ in range(num_of_solves):
         one_solve = True
     elif args.moves != None:
         init_state, init_cube = move_coord.cube_from_scramble(args.moves)
+        one_solve = True
+    elif args.camera:
+        cube_str = recog_color.scan()
+        init_state, init_cube = move_coord.cube_from_str(args.str)
         one_solve = True
     else:
         init_state, shuffle_list, init_cube = move_coord.shuffle(num_of_shuffles)
