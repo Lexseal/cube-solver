@@ -60,7 +60,7 @@ def is_goal(state):
 
 max_move = 23
 num_of_shuffles = 100
-num_of_solves = 100
+num_of_solves = 1
 one_solve = False
 if args.number != None:
     num_of_solves = args.number
@@ -77,7 +77,7 @@ for _ in range(num_of_solves):
         one_solve = True
     elif args.camera:
         cube_str = recog_color.scan()
-        init_state, init_cube = move_coord.cube_from_str(args.str)
+        init_state, init_cube = move_coord.cube_from_str(cube_str)
         one_solve = True
     else:
         init_state, shuffle_list, init_cube = move_coord.shuffle(num_of_shuffles)
@@ -228,6 +228,11 @@ for _ in range(num_of_solves):
             print_move(move)
     print("total moves:", len(solution), "took", time() - start_time)
     time_list.append(time() - start_time)
+
+    #for move in solution:
+    #    init_cube.move(move)
+    #print(init_cube)
+    #print(list(init_cube.corners), list(init_cube.edges))
     
     if one_solve:
         break

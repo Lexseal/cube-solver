@@ -5,7 +5,7 @@ import argparse
 from cube_model import MoveSpace as MS
 from cube_model import G1Space
 from cube_model import Facelets
-from cube_model import conor_to_char, edge_to_char
+from cube_model import corner_to_char, edge_to_char
 from cube_model import str_to_cor, str_to_eg
 from cube_model import convert_move
 import rank
@@ -304,14 +304,17 @@ class Cube:
         cube_str[Facelets.R5] = 'R'
         cube_str[Facelets.B5] = 'B'
         cube_str[Facelets.D5] = 'D'
-        cube_str[Facelets.U1], cube_str[Facelets.B3], cube_str[Facelets.L1] = conor_to_char(self.corners[0])
-        cube_str[Facelets.U3], cube_str[Facelets.R3], cube_str[Facelets.B1] = conor_to_char(self.corners[1])
-        cube_str[Facelets.U9], cube_str[Facelets.F3], cube_str[Facelets.R1] = conor_to_char(self.corners[2])
-        cube_str[Facelets.U7], cube_str[Facelets.L3], cube_str[Facelets.F1] = conor_to_char(self.corners[3])
-        cube_str[Facelets.D1], cube_str[Facelets.F7], cube_str[Facelets.L9] = conor_to_char(self.corners[4])
-        cube_str[Facelets.D3], cube_str[Facelets.R7], cube_str[Facelets.F9] = conor_to_char(self.corners[5])
-        cube_str[Facelets.D9], cube_str[Facelets.B7], cube_str[Facelets.R9] = conor_to_char(self.corners[6])
-        cube_str[Facelets.D7], cube_str[Facelets.L7], cube_str[Facelets.B9] = conor_to_char(self.corners[7])
+        #num = self.corners[0]
+        #cor = corner_to_char(num)
+        #print(num, cor)
+        cube_str[Facelets.U1], cube_str[Facelets.B3], cube_str[Facelets.L1] = corner_to_char(self.corners[0])
+        cube_str[Facelets.U3], cube_str[Facelets.R3], cube_str[Facelets.B1] = corner_to_char(self.corners[1])
+        cube_str[Facelets.U9], cube_str[Facelets.F3], cube_str[Facelets.R1] = corner_to_char(self.corners[2])
+        cube_str[Facelets.U7], cube_str[Facelets.L3], cube_str[Facelets.F1] = corner_to_char(self.corners[3])
+        cube_str[Facelets.D1], cube_str[Facelets.F7], cube_str[Facelets.L9] = corner_to_char(self.corners[4])
+        cube_str[Facelets.D3], cube_str[Facelets.R7], cube_str[Facelets.F9] = corner_to_char(self.corners[5])
+        cube_str[Facelets.D9], cube_str[Facelets.B7], cube_str[Facelets.R9] = corner_to_char(self.corners[6])
+        cube_str[Facelets.D7], cube_str[Facelets.L7], cube_str[Facelets.B9] = corner_to_char(self.corners[7])
         cube_str[Facelets.U2], cube_str[Facelets.B2] = edge_to_char(self.edges[0])
         cube_str[Facelets.U6], cube_str[Facelets.R2] = edge_to_char(self.edges[1])
         cube_str[Facelets.U8], cube_str[Facelets.F2] = edge_to_char(self.edges[2])
@@ -351,7 +354,10 @@ class Cube:
     def read_scramble(self, cube_scramble):
         scramble_list = cube_scramble.split(" ")
         for move in scramble_list:
+            print(move)
             self.move(convert_move(move))
+            print(self)
+            print(list(self.corners), list(self.edges))
 
 def verify(N):
     cube = Cube()
@@ -377,7 +383,9 @@ if __name__ == "__main__":
     if args.str != None:
         cube = Cube(cube_str=args.str)
         print(cube)
+        print(list(cube.corners), list(cube.edges))
     elif args.moves != None:
         cube = Cube(cube_scramble=args.moves)
         print(cube)
+        print(list(cube.corners), list(cube.edges))
     pass

@@ -122,15 +122,15 @@ class Corner(IntEnum):
     Staring from upper left back.
     Rotations are counter clockwise.
     '''
-    UBL = 0; LUB = 8; BLU = 16
-    URB = 1; BUR = 9; RBU = 17
-    UFR = 2; RUF = 10; FRU = 18
-    ULF = 3; FUL = 11; LFU = 19
+    UBL = 0; BLU = 8; LUB = 16
+    URB = 1; RBU = 9; BUR = 17
+    UFR = 2; FRU = 10; RUF = 18
+    ULF = 3; LFU = 11; FUL = 19
     
-    DFL = 4; LDF = 12; FLD = 20
-    DRF = 5; FDR = 13; RFD = 21
-    DBR = 6; RDB = 14; BRD = 22
-    DLB = 7; BDL = 15; LBD = 23
+    DFL = 4; FLD = 12; LDF = 20
+    DRF = 5; RFD = 13; FDR = 21
+    DBR = 6; BRD = 14; RDB = 22
+    DLB = 7; LBD = 15; BDL = 23
 
 cor_char_lookup = []
 cor_char_lookup.append(['U', 'B', 'L'])
@@ -141,21 +141,23 @@ cor_char_lookup.append(['D', 'F', 'L'])
 cor_char_lookup.append(['D', 'R', 'F'])
 cor_char_lookup.append(['D', 'B', 'R'])
 cor_char_lookup.append(['D', 'L', 'B'])
-def conor_to_char(corner):
+def corner_to_char(corner, print=False):
     cor = corner%8
-    cor_char = cor_char_lookup[cor]
+    cor_char = cor_char_lookup[cor].copy()
 
     cor_ori = corner//8
+    if print:
+        print(corner, cor, cor_ori, cor_char)
     if cor_ori == 1:
-        tmp = cor_char[2]
-        cor_char[2] = cor_char[1]        
-        cor_char[1] = cor_char[0]        
-        cor_char[0] = tmp
-    elif cor_ori == 2:
         tmp = cor_char[0]
         cor_char[0] = cor_char[1]        
         cor_char[1] = cor_char[2]        
         cor_char[2] = tmp
+    elif cor_ori == 2:
+        tmp = cor_char[2]
+        cor_char[2] = cor_char[1]        
+        cor_char[1] = cor_char[0]        
+        cor_char[0] = tmp
 
     return cor_char
 
@@ -206,7 +208,7 @@ eg_char_loopup.append(['L', 'B'])
 
 def edge_to_char(edge):
     eg = edge%12
-    eg_char = eg_char_loopup[eg]
+    eg_char = eg_char_loopup[eg].copy()
 
     eg_ori = edge//12
     if eg_ori == 1:
@@ -230,5 +232,5 @@ def str_to_eg(eg_str):
 
 # unit testing
 if __name__ == "__main__":
-    print(str_to_eg("RD"))
+    print(corner_to_char(7))
     pass
