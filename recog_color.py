@@ -40,8 +40,8 @@ def scan():
         _, img = cap.read()
         disp_img = cv2.flip(img, 1)
 
-        for r in range(int((width-cb_size)/2), int((width-cb_size)/2)+cb_size, sq_size):
-            for c in range(int((height-cb_size)/2), int((height-cb_size)/2)+cb_size, sq_size):
+        for r in range(int((width-cb_size)//2), int((width-cb_size)//2)+cb_size, sq_size):
+            for c in range(int((height-cb_size)//2), int((height-cb_size)//2)+cb_size, sq_size):
                 start = (r+sq_size//4, c+sq_size//4)
                 end = (start[0]+sq_size//2, start[1]+sq_size//2)
                 cv2.rectangle(disp_img, start, end, 255, 3)
@@ -55,10 +55,10 @@ def scan():
 
             # iterate through all the pixels
             face = []
-            for r in range(int((height-300)/2), int((height-300)/2)+300, 100):
-                for c in range(int((width-300)/2), int((width-300)/2)+300, 100):
-                    start = (r+25, c+25)
-                    end = (start[0]+50, start[1]+50)
+            for r in range(int((height-cb_size)//2), int((height-cb_size)//2)+cb_size, sq_size):
+                for c in range(int((width-cb_size)//2), int((width-cb_size)//2)+cb_size, sq_size):
+                    start = (r+sq_size//4, c+sq_size//4)
+                    end = (start[0]+sq_size//2, start[1]+sq_size//2)
                     H = 0; S = 0; V = 0
                     pixel_count = 0
                     for y in range(start[0], end[0], 5):
@@ -75,7 +75,7 @@ def scan():
                     face.append(match_color(H, S, V))
             cube_num.append(face)
             print_face(face)
-            cv2.imshow("hsv", hsv_img)
+            #cv2.imshow("hsv", hsv_img)
 
             # prompt
             if (len(faces) > 0):
@@ -85,10 +85,25 @@ def scan():
                 for face in cube_num:
                     original = face[4] # center
                     replace_with = square_list.pop(0)
+                    if replace_with == "F":
+                        continue
                     for face in cube_num:
+                        #print(face)
                         for i, square in enumerate(face):
                             if square == original:
                                 face[i] = replace_with
+                #for face in cube_num:
+                #    print(face)
+                #    print()
+                #print()
+                for face in cube_num:
+                    for i, square in enumerate(face):
+                        if isinstance(square, int):
+                            face[i] = "F"
+                #for face in cube_num:
+                #    print(face)
+                #    print()
+                #print()
                 for i, face in enumerate(cube_num):
                     #print(face)
                     cube_num[i] = "".join(face)
