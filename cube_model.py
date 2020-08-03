@@ -166,8 +166,8 @@ for i, chars in enumerate(cor_char_lookup):
     cor_num_loopup["".join(chars)] = i
 def str_to_cor(cor_str):
     # reverse rotate
-    cor_str_1stop = cor_str[1:3]+cor_str[0:1]
-    cor_str_2stop = cor_str[2:3]+cor_str[0:2]
+    cor_str_1stop = cor_str[2:3]+cor_str[0:2]
+    cor_str_2stop = cor_str[1:3]+cor_str[0:1]
     if cor_str in cor_num_loopup:
         return cor_num_loopup[cor_str]
     elif cor_str_1stop in cor_num_loopup:

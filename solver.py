@@ -11,7 +11,6 @@ from cube_model import G1Space
 import move_coord
 import calc_move_table
 import permute
-import recog_color
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--str", type=str, help="cube string")
@@ -76,6 +75,7 @@ for _ in range(num_of_solves):
         init_state, init_cube = move_coord.cube_from_scramble(args.moves)
         one_solve = True
     elif args.camera:
+        import recog_color
         cube_str = recog_color.scan()
         init_state, init_cube = move_coord.cube_from_str(cube_str)
         one_solve = True
