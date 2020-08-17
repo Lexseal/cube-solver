@@ -11,6 +11,7 @@ from cube_model import G1Space
 import move_coord
 import calc_move_table
 import permute
+import search
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--str", type=str, help="cube string")
@@ -26,37 +27,6 @@ def print_move(move_num):
             print(move)
             return
 
-# load tables
-if not os.path.exists("table/stage1_corners.npy") or\
-    not os.path.exists("table/stage1_edges.npy") or\
-    not os.path.exists("table/stage2_corners.npy") or\
-    not os.path.exists("table/stage2_edges.npy"):
-    print("making pruning tables...")
-    permute.calc_stage1_corners()
-    permute.calc_stage1_edges()
-    permute.calc_stage2_corners()
-    permute.calc_stage2_egdes()
-    print("table finished. please run the program again")
-    exit(0)
-
-stage1_corners = bytearray(np.load("table/stage1_corners.npy"))
-stage1_edges = bytearray(np.load("table/stage1_edges.npy"))
-stage2_corners = bytearray(np.load("table/stage2_corners.npy"))
-stage2_edges = bytearray(np.load("table/stage2_edges.npy"))
-
-def h1(state):
-    co_idx = state[0]
-    eg_idx = state[1]*495+state[2]
-    return max(stage1_corners[co_idx], stage1_edges[eg_idx])
-
-def h2(state):
-    co_idx = state[0]
-    eg_idx = state[1]*24+state[2]
-    return max(stage2_corners[co_idx], stage2_edges[eg_idx])
-
-def is_goal(state):
-    return state[0] == 0 and state[1] == 0 and state[2] == 0
-
 max_move = 23
 num_of_shuffles = 100
 num_of_solves = 1
@@ -65,7 +35,7 @@ if args.number != None:
     num_of_solves = args.number
 
 time_list = []
-for _ in range(num_of_solves):
+for n in range(num_of_solves):
 
     # iterative deepening depth-first search
     if args.str != None:
@@ -95,65 +65,10 @@ for _ in range(num_of_solves):
 
     last_move_lists = []
     while not solution_found:
-        state = copy(init_state)
+        state = deepcopy(init_state)
+        move_list1 = search.first_stage_search(state, stage1_min, last_move_lists)
+
         cube = deepcopy(init_cube)
-        move_list1 = []
-        first_phase_complete = False
-        for max_depth in range(stage1_min, 13):
-            state_stack = deque()
-            move_stack = deque()
-
-            state_stack.append(state)
-            while len(state_stack) > 0:
-                cur_state = state_stack.pop()
-                cur_depth = cur_state[4] # get the depth of the state
-                while (len(move_stack) > cur_depth):
-                    move_stack.pop()
-
-                last_move = cur_state[3]
-                move_stack.append(last_move)
-
-                if cur_depth == max_depth:
-                    if is_goal(cur_state):
-                        move_list1 = list(move_stack)[1:cur_depth+1]
-                        same_solve = False
-                        for last_list in last_move_lists:
-                            if move_list1 == last_list:
-                                same_solve = True
-                                break
-                        if same_solve:
-                            print("same solve")
-                            continue
-                        # unique solve
-                        last_move_lists.append(move_list1)
-                        stage1_min = cur_depth # set min depth
-                        print("stage1 victory", cur_depth)
-                        state = cur_state
-                        first_phase_complete = True
-                        break
-                else:
-                    move_space = bytearray(MS)
-                    random.shuffle(move_space)
-                    for move in move_space:
-                        cur_face = move//3
-                        last_face = last_move//3
-                        if cur_face == last_face: continue
-                        elif cur_face == 3 and last_face == 1: continue
-                        elif cur_face == 4 and last_face == 2: continue
-                        elif cur_face == 5 and last_face == 0: continue
-
-                        new_state = copy(cur_state)
-                        move_coord.stage1_move(new_state, move)
-                        new_state[3] = move
-                        next_depth = cur_depth+1
-                        new_state[4] = next_depth
-
-                        # add if within the search range
-                        if next_depth + h1(new_state) <= max_depth:
-                            state_stack.append(new_state)
-            if first_phase_complete: break
-            #print("level", max_depth, "done")
-
         for move in move_list1:
             cube.move(move)
             #print_move(move)
@@ -163,58 +78,14 @@ for _ in range(num_of_solves):
         state[1] = rank.eg_perm(cube.get_eg_perm())
         state[2] = rank.ud_perm(cube.get_ud_perm())
         state[4] = 0 # depth is 0 to begin with
-        move_list2 = []
-        second_phase_complete = False
-        for max_depth in range(0, max_move+1-len(move_list1)):
-            state_stack = deque()
-            move_stack = deque()
+        stage2_max = max_move-len(move_list1)
+        solution_found, move_list2 = search.second_stage_search(state, stage2_max)
 
-            state_stack.append(state)
-            while len(state_stack) > 0:
-                cur_state = state_stack.pop()
-                cur_depth = cur_state[4] # get the depth of the state
-                while (len(move_stack) > cur_depth):
-                    move_stack.pop()
-
-                last_move = cur_state[3]
-                move_stack.append(last_move)
-
-                if cur_depth == max_depth:
-                    if is_goal(cur_state):
-                        print("stage2 victory", cur_depth)
-                        move_list2 = list(move_stack)[1:cur_depth+1]
-                        second_phase_complete = True
-                        break
-                else:
-                    move_space = bytearray(G1Space)
-                    random.shuffle(move_space)
-                    for move in move_space:
-                        cur_face = move//3
-                        last_face = last_move//3
-                        if cur_face == last_face: continue
-                        elif cur_face == 3 and last_face == 1: continue
-                        elif cur_face == 4 and last_face == 2: continue
-                        elif cur_face == 5 and last_face == 0: continue
-
-                        new_state = copy(cur_state)
-                        move_coord.stage2_move(new_state, move)
-                        new_state[3] = move
-                        next_depth = cur_depth+1
-                        new_state[4] = next_depth
-
-                        # add if within the search range
-                        if next_depth + h2(new_state) <= max_depth:
-                            state_stack.append(new_state)
-            if second_phase_complete: break
-            #print("level", max_depth, "done")
-
-        for move in move_list2:
-            cube.move(move)
-            #print_move(move)
-        #print(list(cube.corners), list(cube.edges))
-
-        if second_phase_complete and len(move_list1)+len(move_list2) <= max_move:
-            solution_found = True
+        if solution_found:
+            for move in move_list2:
+                cube.move(move)
+                #print_move(move)
+            #print(list(cube.corners), list(cube.edges))
             solution = move_list1+move_list2
         else:
             times_failed += 1
@@ -227,7 +98,7 @@ for _ in range(num_of_solves):
     if args.display:
         for move in solution:
             print_move(move)
-    print("total moves:", len(solution), "took", time() - start_time)
+    print("#", n+1, "total moves:", len(solution), "took", time() - start_time)
     time_list.append(time() - start_time)
 
     #for move in solution:
