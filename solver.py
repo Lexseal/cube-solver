@@ -11,10 +11,12 @@ import move_coord
 import search
 
 def stage1_result(result):
-    global move_list1
+    global move_lists1
     global pool
-    move_list1 = result
-    pool.terminate()
+    global times_failed
+    move_lists1.append(result)
+    if (times_failed < 10):
+        pool.terminate()
 
 def stage2_result(result):
     global move_list2
@@ -46,10 +48,11 @@ if args.number != None:
     num_of_solves = args.number
 
 time_list = []
-move_list1 = [] # global move list
+move_lists1 = [] # global move list
 move_list2 = []
 pool = multiprocessing.Pool(8)
 solution_found = False
+times_failed = 0
 for n in range(num_of_solves):
 
     # iterative deepening depth-first search
@@ -79,27 +82,33 @@ for n in range(num_of_solves):
     solution = []
 
     last_move_lists = []
+    move_lists1 = []
     while not solution_found:
         # TODO we are assuming the cube is not solved
-        pool = multiprocessing.Pool(8)
-        move_list1 = []
-        move_space = list(MS)
-        random.shuffle(move_space)
-        for move in move_space:
-            params = []
-            state = deepcopy(init_state)
-            move_coord.stage1_move(state, move)
-            state[3] = move
-            params.append(state)
-            params.append(stage1_min-1)
-            params.append(last_move_lists)
-            pool.apply_async(search.first_stage_search, params, callback=stage1_result)
-        pool.close()
-        pool.join()
+        if len(move_lists1) == 0: # we have nothing
+            print("calculating", stage1_min)
+            pool = multiprocessing.Pool(8)
+            move_space = list(MS)
+            random.shuffle(move_space)
+            for move in move_space:
+                params = []
+                state = deepcopy(init_state)
+                move_coord.stage1_move(state, move)
+                state[3] = move
+                params.append(state)
+                params.append(stage1_min-1)
+                params.append(last_move_lists)
+                pool.apply_async(search.first_stage_search, params, callback=stage1_result)
+            pool.close()
+            pool.join()
+
+            stage1_min = len(move_lists1[0])
+            for move_list1 in move_lists1:
+                last_move_lists.append(move_list1) # don't repeat that
+                if len(move_list1) < stage1_min:
+                    stage1_min = len(move_list1) # set min num of moves
         
-        last_move_lists.append(move_list1) # don't repeat that
-        #print(last_move_lists)
-        stage1_min = len(move_list1) # set min depth
+        move_list1 = move_lists1.pop() # get the last solution because that one is the longest
 
         cube = deepcopy(init_cube)
         for move in move_list1:
@@ -145,13 +154,16 @@ for n in range(num_of_solves):
                 #print_move(move)
             #print(list(cube.corners), list(cube.edges))
             solution = move_list1+move_list2
-        else:
-            times_failed += 1
-            if stage1_min < 9:
-                stage1_min += 1
-            elif times_failed%7 == 0:
-                stage1_min += 1
-            stage1_min = min(stage1_min, 12) # can't be greater than 12
+            continue
+        
+        times_failed += 1
+        if times_failed > 14:
+            stage1_min = 12
+        elif stage1_min < 9:
+            stage1_min += 1
+        elif times_failed % 7 == 0:
+            stage1_min = min(stage1_min+1, 11) # can't be greater than 11
+        print(times_failed)
 
     if args.display:
         for move in solution:
