@@ -86,7 +86,7 @@ for n in range(num_of_solves):
     while not solution_found:
         # TODO we are assuming the cube is not solved
         if len(move_lists1) == 0: # we have nothing
-            print("calculating", stage1_min)
+            #print("calculating", stage1_min)
             pool = multiprocessing.Pool(8)
             move_space = list(MS)
             random.shuffle(move_space)
@@ -101,7 +101,7 @@ for n in range(num_of_solves):
                 pool.apply_async(search.first_stage_search, params, callback=stage1_result)
             pool.close()
             pool.join()
-
+            pool.terminate()
             stage1_min = len(move_lists1[0])
             for move_list1 in move_lists1:
                 last_move_lists.append(move_list1) # don't repeat that
@@ -145,6 +145,7 @@ for n in range(num_of_solves):
             pool.apply_async(search.second_stage_search, params, callback=stage2_result)
         pool.close()
         pool.join()
+        pool.terminate()
 
         #solution_found, move_list2 = search.second_stage_search(init_state2, stage2_max)
 
@@ -163,7 +164,7 @@ for n in range(num_of_solves):
             stage1_min += 1
         elif times_failed % 7 == 0:
             stage1_min = min(stage1_min+1, 11) # can't be greater than 11
-        print(times_failed)
+        #print(times_failed)
 
     if args.display:
         for move in solution:
