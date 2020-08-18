@@ -1,17 +1,34 @@
 import numpy as np
-from collections import deque
 import random
-from copy import copy, deepcopy
+from copy import deepcopy
 from time import time
-import os.path
 import argparse
+import multiprocessing
 import rank
 from cube_model import MoveSpace as MS
 from cube_model import G1Space
 import move_coord
-import calc_move_table
-import permute
 import search
+
+def stage1_result(result):
+    global move_list1
+    global pool
+    move_list1 = result
+    pool.terminate()
+
+def stage2_result(result):
+    global move_list2
+    global pool
+    global solution_found
+    solution_found, move_list2 = result
+    if solution_found:
+        pool.terminate()
+
+def print_move(move_num):
+    for move in MS:
+        if move_num == move:
+            print(move)
+            return
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--str", type=str, help="cube string")
@@ -21,12 +38,6 @@ parser.add_argument("-n", "--number", type=int, help="number of solves")
 parser.add_argument("-c", "--camera", action="store_true", help="solve from camera")
 args = parser.parse_args()
 
-def print_move(move_num):
-    for move in MS:
-        if move_num == move:
-            print(move)
-            return
-
 max_move = 23
 num_of_shuffles = 100
 num_of_solves = 1
@@ -35,6 +46,10 @@ if args.number != None:
     num_of_solves = args.number
 
 time_list = []
+move_list1 = [] # global move list
+move_list2 = []
+pool = multiprocessing.Pool(8)
+solution_found = False
 for n in range(num_of_solves):
 
     # iterative deepening depth-first search
@@ -65,21 +80,64 @@ for n in range(num_of_solves):
 
     last_move_lists = []
     while not solution_found:
-        state = deepcopy(init_state)
-        move_list1 = search.first_stage_search(state, stage1_min, last_move_lists)
+        # TODO we are assuming the cube is not solved
+        pool = multiprocessing.Pool(8)
+        move_list1 = []
+        move_space = list(MS)
+        random.shuffle(move_space)
+        for move in move_space:
+            params = []
+            state = deepcopy(init_state)
+            move_coord.stage1_move(state, move)
+            state[3] = move
+            params.append(state)
+            params.append(stage1_min-1)
+            params.append(last_move_lists)
+            pool.apply_async(search.first_stage_search, params, callback=stage1_result)
+        pool.close()
+        pool.join()
+        
+        last_move_lists.append(move_list1) # don't repeat that
+        #print(last_move_lists)
+        stage1_min = len(move_list1) # set min depth
 
         cube = deepcopy(init_cube)
         for move in move_list1:
             cube.move(move)
             #print_move(move)
         #print(list(cube.corners), list(cube.edges))
+        #print("second stage started", stage1_min, max_move-len(move_list1))
 
-        state[0] = rank.co_perm(cube.get_co_perm())
-        state[1] = rank.eg_perm(cube.get_eg_perm())
-        state[2] = rank.ud_perm(cube.get_ud_perm())
-        state[4] = 0 # depth is 0 to begin with
+        init_state2 = []
+        init_state2.append(rank.co_perm(cube.get_co_perm()))
+        init_state2.append(rank.eg_perm(cube.get_eg_perm()))
+        init_state2.append(rank.ud_perm(cube.get_ud_perm())) # coords
+        init_state2.append(move_list1[len(move_list1)-1]) # last move
+        init_state2.append(0) # takes 0 moves 
+
         stage2_max = max_move-len(move_list1)
-        solution_found, move_list2 = search.second_stage_search(state, stage2_max)
+
+        move_list2 = []
+        pool = multiprocessing.Pool(8)
+        last_face = init_state[3]//3
+        for move in G1Space:
+            cur_face = move//3
+            if cur_face == last_face: continue
+            elif cur_face == 3 and last_face == 1: continue
+            elif cur_face == 4 and last_face == 2: continue
+            elif cur_face == 5 and last_face == 0: continue
+
+            params = []
+            state = deepcopy(init_state2)
+            move_coord.stage2_move(state, move)
+            state[3] = move
+            params.append(state)
+            params.append(stage2_max-1)
+            pool.apply_async(search.second_stage_search, params, callback=stage2_result)
+        pool.close()
+        pool.join()
+
+        #solution_found, move_list2 = search.second_stage_search(init_state2, stage2_max)
 
         if solution_found:
             for move in move_list2:
@@ -110,3 +168,4 @@ for n in range(num_of_solves):
         break
 
 print(sum(time_list)/len(time_list))
+pool.terminate()

@@ -43,7 +43,8 @@ def is_goal(state):
 
 def first_stage_search(state, stage1_min, last_move_lists):
     move_list1 = []
-    for max_depth in range(stage1_min, 13):
+    first_move = state[3]
+    for max_depth in range(stage1_min, 13-1):
         state_stack = deque()
         move_stack = deque()
 
@@ -66,13 +67,10 @@ def first_stage_search(state, stage1_min, last_move_lists):
                             same_solve = True
                             break
                     if same_solve:
-                        #print("same solve")
+                        print("same solve")
                         continue
-                    # unique solve
-                    last_move_lists.append(move_list1)
-                    stage1_min = cur_depth # set min depth
-                    #print("stage1 victory", cur_depth)
-                    state = cur_state
+                    #print("stage1 victory", cur_depth+1)
+                    move_list1.insert(0, first_move)
                     return move_list1
                 continue
             
@@ -102,6 +100,7 @@ def first_stage_search(state, stage1_min, last_move_lists):
 
 def second_stage_search(state, stage2_max):
     move_list2 = []
+    first_move = state[3]
     for max_depth in range(0, stage2_max+1):
         state_stack = deque()
         move_stack = deque()
@@ -120,6 +119,7 @@ def second_stage_search(state, stage2_max):
                 if is_goal(cur_state):
                     #print("stage2 victory", cur_depth)
                     move_list2 = list(move_stack)[1:cur_depth+1]
+                    move_list2.insert(0, first_move)
                     return True, move_list2
                 continue
             
