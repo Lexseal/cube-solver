@@ -356,8 +356,8 @@ class Cube:
         for move in scramble_list:
             print(move)
             self.move(convert_move(move))
-            print(self)
-            print(list(self.corners), list(self.edges))
+            #print(self)
+            #print(list(self.corners), list(self.edges))
 
 def verify(N):
     cube = Cube()

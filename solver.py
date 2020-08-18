@@ -119,7 +119,7 @@ for n in range(num_of_solves):
 
         move_list2 = []
         pool = multiprocessing.Pool(8)
-        last_face = init_state[3]//3
+        last_face = init_state2[3]//3
         for move in G1Space:
             cur_face = move//3
             if cur_face == last_face: continue
