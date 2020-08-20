@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from copy import deepcopy
+from copy import copy, deepcopy
 from time import time
 import argparse
 import multiprocessing
@@ -78,7 +78,6 @@ for n in range(num_of_solves):
     solution_found = False
     solution = []
 
-    last_move_lists = []
     while not solution_found:
         # TODO we are assuming the cube is not solved
         pool = multiprocessing.Pool(8)
@@ -87,20 +86,18 @@ for n in range(num_of_solves):
         random.shuffle(move_space)
         for move in move_space:
             params = []
-            state = deepcopy(init_state)
+            state = copy(init_state)
             move_coord.stage1_move(state, move)
             state[3] = move
             params.append(state)
             params.append(stage1_min-1)
-            params.append(last_move_lists)
             pool.apply_async(search.first_stage_search, params, callback=stage1_result)
         pool.close()
         pool.join()
         
-        last_move_lists.append(move_list1) # don't repeat that
-        #print(last_move_lists)
         stage1_min = len(move_list1) # set min depth
 
+        # move the original cube to G1 state
         cube = deepcopy(init_cube)
         for move in move_list1:
             cube.move(move)
@@ -128,7 +125,7 @@ for n in range(num_of_solves):
             elif cur_face == 5 and last_face == 0: continue
 
             params = []
-            state = deepcopy(init_state2)
+            state = copy(init_state2)
             move_coord.stage2_move(state, move)
             state[3] = move
             params.append(state)
@@ -150,9 +147,8 @@ for n in range(num_of_solves):
             if stage1_min < 9:
                 stage1_min += 1
             elif times_failed%7 == 0:
-                stage1_min += 1
-            stage1_min = min(stage1_min, 12) # can't be greater than 12
-
+                stage1_min = min(stage1_min+1, 12) # can't be greater than 12
+            
     if args.display:
         for move in solution:
             print_move(move)

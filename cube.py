@@ -354,7 +354,7 @@ class Cube:
     def read_scramble(self, cube_scramble):
         scramble_list = cube_scramble.split(" ")
         for move in scramble_list:
-            print(move)
+            #print(move)
             self.move(convert_move(move))
             #print(self)
             #print(list(self.corners), list(self.edges))

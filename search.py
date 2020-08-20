@@ -41,7 +41,7 @@ def h2(state):
 def is_goal(state):
     return state[0] == 0 and state[1] == 0 and state[2] == 0
 
-def first_stage_search(state, stage1_min, last_move_lists):
+def first_stage_search(state, stage1_min):
     move_list1 = []
     first_move = state[3]
     for max_depth in range(stage1_min, 13-1):
@@ -61,14 +61,6 @@ def first_stage_search(state, stage1_min, last_move_lists):
             if cur_depth == max_depth:
                 if is_goal(cur_state):
                     move_list1 = list(move_stack)[1:cur_depth+1]
-                    same_solve = False
-                    for last_list in last_move_lists:
-                        if move_list1 == last_list:
-                            same_solve = True
-                            break
-                    if same_solve:
-                        print("same solve")
-                        continue
                     #print("stage1 victory", cur_depth+1)
                     move_list1.insert(0, first_move)
                     return move_list1
@@ -86,17 +78,14 @@ def first_stage_search(state, stage1_min, last_move_lists):
 
                 new_state = copy(cur_state)
                 move_coord.stage1_move(new_state, move)
-                new_state[3] = move
                 next_depth = cur_depth+1
-                new_state[4] = next_depth
-
                 # add if within the search range
                 if next_depth + h1(new_state) <= max_depth:
+                    new_state[3] = move # update last move
+                    new_state[4] = next_depth # update depth
                     state_stack.append(new_state)
-
         #print("level", max_depth, "done")
     return [] # empty list as placeholer
-
 
 def second_stage_search(state, stage2_max):
     move_list2 = []
@@ -135,12 +124,11 @@ def second_stage_search(state, stage2_max):
 
                 new_state = copy(cur_state)
                 move_coord.stage2_move(new_state, move)
-                new_state[3] = move
                 next_depth = cur_depth+1
-                new_state[4] = next_depth
-
                 # add if within the search range
                 if next_depth + h2(new_state) <= max_depth:
+                    new_state[3] = move # update last move
+                    new_state[4] = next_depth # update depth
                     state_stack.append(new_state)
         #print("level", max_depth, "done")
     return False, [] # not found
