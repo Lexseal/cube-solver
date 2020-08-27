@@ -232,6 +232,52 @@ class Cube:
         elif command == MS.D3:
             self.d3()
 
+    @staticmethod
+    def rotateColor(str):
+        return str[2]+str[5]+str[8]+str[1]+str[4]+str[7]+str[0]+str[3]+str[6]
+
+    @staticmethod
+    def rotateColorRev(str):
+        return str[6]+str[3]+str[0]+str[7]+str[4]+str[1]+str[8]+str[5]+str[2]
+
+    def rotateZ(self):
+        cube_str = self.__str__()
+        cube_str = cube_str.replace("F", "r")
+        cube_str = cube_str.replace("R", "b")
+        cube_str = cube_str.replace("B", "l")
+        cube_str = cube_str.replace("L", "f")
+        cube_str = cube_str.replace("f", "F")
+        cube_str = cube_str.replace("l", "L")
+        cube_str = cube_str.replace("b", "B")
+        cube_str = cube_str.replace("r", "R")
+        up_face = self.rotateColor(cube_str[0:9])
+        left_face = cube_str[9:18]
+        front_face = cube_str[18:27]
+        right_face = cube_str[27:36]
+        back_face = cube_str[36:45]
+        down_face = self.rotateColorRev(cube_str[45:54])
+        cube_str = up_face+back_face+left_face+front_face+right_face+down_face
+        self.read_str(cube_str)
+
+    def rotateXRev(self):
+        cube_str = self.__str__()
+        cube_str = cube_str.replace("U", "r")
+        cube_str = cube_str.replace("R", "d")
+        cube_str = cube_str.replace("D", "l")
+        cube_str = cube_str.replace("L", "u")
+        cube_str = cube_str.replace("r", "R")
+        cube_str = cube_str.replace("d", "D")
+        cube_str = cube_str.replace("l", "L")
+        cube_str = cube_str.replace("u", "U")
+        up_face = self.rotateColorRev(cube_str[0:9])
+        left_face = self.rotateColorRev(cube_str[9:18])
+        front_face = self.rotateColorRev(cube_str[18:27])
+        right_face = self.rotateColorRev(cube_str[27:36])
+        back_face = self.rotateColor(cube_str[36:45])
+        down_face = self.rotateColorRev(cube_str[45:54])
+        cube_str = left_face+down_face+front_face+up_face+back_face+right_face
+        self.read_str(cube_str)
+
     def get_co_ori(self):
         co_ori = [0]*8
         for i, co in enumerate(self.corners):

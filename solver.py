@@ -18,10 +18,11 @@ def print_move(move_num):
 def deposit_result(result):
     global solution
     global pool
-    solution = result
+    global rotation
+    rotation, solution = result
     pool.terminate()
 
-def solve(init_cube, init_state, max_move):
+def solve(init_cube, init_state, max_move, rotation):
     stage1_min = 0
     times_failed = 0
     solution_found = False
@@ -53,8 +54,7 @@ def solve(init_cube, init_state, max_move):
                 cube.move(move)
                 print_move(move)
             print(list(cube.corners), list(cube.edges))'''
-            first_move = [init_state[3]] # append the first move
-            return first_move+move_list1+move_list2
+            return rotation, move_list1+move_list2
         else:
             times_failed += 1
             if stage1_min < 9:
@@ -62,6 +62,7 @@ def solve(init_cube, init_state, max_move):
             elif times_failed%7 == 0:
                 stage1_min = min(stage1_min+1, 12) # can't be greater than 12
 
+global rotation
 global solution
 global pool
 if __name__ == "__main__":
@@ -102,19 +103,21 @@ if __name__ == "__main__":
         global pool
         pool = multiprocessing.Pool()
         start_time = time()
-        move_space = list(MS)
-        random.shuffle(move_space)
-        for move in move_space:
+        for i in range(3):
             cube = deepcopy(init_cube)
-            cube.move(move)
+            for _ in range(i):
+                cube.rotateZ()
+                cube.rotateXRev()
             state = copy(init_state)
-            move_coord.stage1_move(state, move)
-            param = [cube, state, max_move]
+            state[0] = rank.co_ori(cube.get_co_ori())
+            state[1] = rank.eg_ori(cube.get_eg_ori())
+            state[2] = rank.ud_edges(cube.get_ud_edges())
+            param = [cube, state, max_move, i]
             pool.apply_async(solve, param, callback=deposit_result)
         pool.close()
         pool.join()
 
-        print("#", n+1, "total moves:", len(solution), "took", time() - start_time)
+        print("#", n+1, "rot:", rotation, "total moves:", len(solution), "took", time() - start_time)
         time_list.append(time() - start_time)
         
         if args.display:
