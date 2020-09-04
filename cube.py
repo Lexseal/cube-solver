@@ -278,6 +278,26 @@ class Cube:
         cube_str = left_face+down_face+front_face+up_face+back_face+right_face
         self.read_str(cube_str)
 
+    @staticmethod
+    def flipFace(face):
+        return face[2]+face[1]+face[0]+face[5]+face[4]+face[3]+face[8]+face[7]+face[6]
+
+    def flipCube(self):
+        cube_str = self.__str__()
+        print(cube_str)
+        cube_str = cube_str.replace("L", "r")
+        cube_str = cube_str.replace("R", "L")
+        cube_str = cube_str.replace("r", "R") # replace left with right
+        up_face = self.flipFace(cube_str[0:9])
+        left_face = self.flipFace(cube_str[27:36]) # gets the right face
+        front_face = self.flipFace(cube_str[18:27])
+        right_face = self.flipFace(cube_str[9:18]) # gets the left face
+        back_face = self.flipFace(cube_str[36:45])
+        down_face = self.flipFace(cube_str[45:54]) # get faces
+        cube_str = left_face+down_face+front_face+up_face+back_face+right_face
+        print(cube_str)
+        self.read_str(cube_str)
+
     def get_co_ori(self):
         co_ori = [0]*8
         for i, co in enumerate(self.corners):
@@ -350,9 +370,6 @@ class Cube:
         cube_str[Facelets.R5] = 'R'
         cube_str[Facelets.B5] = 'B'
         cube_str[Facelets.D5] = 'D'
-        #num = self.corners[0]
-        #cor = corner_to_char(num)
-        #print(num, cor)
         cube_str[Facelets.U1], cube_str[Facelets.B3], cube_str[Facelets.L1] = corner_to_char(self.corners[0])
         cube_str[Facelets.U3], cube_str[Facelets.R3], cube_str[Facelets.B1] = corner_to_char(self.corners[1])
         cube_str[Facelets.U9], cube_str[Facelets.F3], cube_str[Facelets.R1] = corner_to_char(self.corners[2])
