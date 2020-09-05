@@ -284,7 +284,6 @@ class Cube:
 
     def flipCube(self):
         cube_str = self.__str__()
-        print(cube_str)
         cube_str = cube_str.replace("L", "r")
         cube_str = cube_str.replace("R", "L")
         cube_str = cube_str.replace("r", "R") # replace left with right
@@ -294,8 +293,7 @@ class Cube:
         right_face = self.flipFace(cube_str[9:18]) # gets the left face
         back_face = self.flipFace(cube_str[36:45])
         down_face = self.flipFace(cube_str[45:54]) # get faces
-        cube_str = left_face+down_face+front_face+up_face+back_face+right_face
-        print(cube_str)
+        cube_str = up_face+left_face+front_face+right_face+back_face+down_face
         self.read_str(cube_str)
 
     def get_co_ori(self):
