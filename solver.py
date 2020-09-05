@@ -103,13 +103,11 @@ if __name__ == "__main__":
         global pool
         pool = multiprocessing.Pool()
         start_time = time()
-        for i in range(6): # do 6 transformations
+        for i in range(3): # do 6 transformations
             cube = deepcopy(init_cube)
-            for _ in range(i//2): # rotate every even number
+            for _ in range(i): # rotate
                 cube.rotateZ()
                 cube.rotateXRev()
-            if i%2 == 1:
-                cube.flipCube() # flip cube every odd number
             state = copy(init_state)
             state[0] = rank.co_ori(cube.get_co_ori())
             state[1] = rank.eg_ori(cube.get_eg_ori())
