@@ -9,6 +9,12 @@ from cube_model import MoveSpace as MS
 import move_coord
 import search
 
+"""
+Handles user input and constructs 3 search threads.
+Each thread has a different cube that is rotated at 120 degree
+from one another on the xz axis
+"""
+
 def print_move(move_num):
     for move in MS:
         if move_num == move:
@@ -106,8 +112,8 @@ if __name__ == "__main__":
         for i in range(3): # do 6 transformations
             cube = deepcopy(init_cube)
             for _ in range(i): # rotate
-                cube.rotateZ()
-                cube.rotateXRev()
+                cube.rotate_z()
+                cube.rotate_x_rev()
             state = copy(init_state)
             state[0] = rank.co_ori(cube.get_co_ori())
             state[1] = rank.eg_ori(cube.get_eg_ori())

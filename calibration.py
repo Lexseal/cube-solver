@@ -2,6 +2,10 @@ import cv2
 import numpy as np
 import os
 
+"""
+Capture an image with the webcam and select color with your mouse
+"""
+
 def mouseHSV(event,x,y,flags,param):
     if event == cv2.EVENT_LBUTTONDOWN: #checks mouse left button down condition
         img = param[0]

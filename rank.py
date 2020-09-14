@@ -4,6 +4,12 @@ from time import time
 import numpy as np
 import math
 
+"""
+This has several perfect hash functions to give each position of the cube
+a unique coordinate. It can also reverse the hash function to give the 
+relavent cube information back from a coordinate.
+"""
+
 def co_ori(co_ori):
     '''
     co_perm_ori 8-bit ternary, but only the first 7 bits are used
@@ -108,4 +114,4 @@ def ud_perm_inv(rank):
 
 if __name__ == "__main__":
     print(co_ori([2, 1, 2, 1, 1, 0, 0, 2]))
-    #print(h2_co_permners([7, 6, 5, 4, 3, 2, 1, 0]))
+    pass

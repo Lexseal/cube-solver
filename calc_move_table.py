@@ -1,10 +1,13 @@
 import numpy as np
 import random
 import time
-from cube_model import MoveSpace as MS
-from cube_model import G1Space
+import cube_model
 import rank
 from cube import Cube
+
+"""
+This file calculates the move table for each coordinate
+"""
 
 class MoveTable:
     def __init__(self):
@@ -13,10 +16,10 @@ class MoveTable:
 
     def co_ori_table(self):
         co_ori_table = []
-        for i in range(2187):
+        for i in range(cube_model.StateSize.CO_ORI):
             cur_co_ori = rank.co_ori_inv(i)
             state_table = []
-            for move in MS:
+            for move in cube_model.MoveSpace:
                 self.cube.set_co_ori(cur_co_ori)
                 self.cube.move(move)
                 state_table.append(rank.co_ori(self.cube.get_co_ori()))
@@ -25,10 +28,10 @@ class MoveTable:
 
     def eg_ori_table(self):
         eg_ori_table = []
-        for i in range(2048):
+        for i in range(cube_model.StateSize.EG_ORI):
             cur_eg_ori = rank.eg_ori_inv(i)
             state_table = []
-            for move in MS:
+            for move in cube_model.MoveSpace:
                 self.cube.set_eg_ori(cur_eg_ori)
                 self.cube.move(move)
                 state_table.append(rank.eg_ori(self.cube.get_eg_ori()))
@@ -37,10 +40,10 @@ class MoveTable:
 
     def ud_edges_table(self):
         ud_edges_table = []
-        for i in range(495):
+        for i in range(cube_model.StateSize.UD_COMB):
             cur_ud_edges = rank.ud_edges_inv(i)
             state_table = []
-            for move in MS:
+            for move in cube_model.MoveSpace:
                 self.cube.set_ud_egdes(cur_ud_edges)
                 self.cube.move(move)
                 state_table.append(rank.ud_edges(self.cube.get_ud_edges()))
@@ -49,10 +52,10 @@ class MoveTable:
 
     def co_perm_table(self):
         co_perm_table = []
-        for i in range(40320):
+        for i in range(cube_model.StateSize.CO_PERM):
             cur_co_perm = rank.co_perm_inv(i)
             state_table = [-1]*18
-            for move in G1Space:
+            for move in cube_model.G1Space:
                 self.cube.set_co_perm(cur_co_perm)
                 self.cube.move(move)
                 state_table[move] = rank.co_perm(self.cube.get_co_perm())
@@ -62,10 +65,10 @@ class MoveTable:
 
     def eg_perm_table(self):
         eg_perm_table = []
-        for i in range(40320):
+        for i in range(cube_model.StateSize.EG_PERM):
             cur_eg_perm = rank.eg_perm_inv(i)
             state_table = [-1]*18
-            for move in G1Space:
+            for move in cube_model.G1Space:
                 self.cube.set_eg_perm(cur_eg_perm)
                 self.cube.move(move)
                 state_table[move] = rank.eg_perm(self.cube.get_eg_perm())
@@ -74,10 +77,10 @@ class MoveTable:
     
     def ud_perm_table(self):
         ud_perm_table = []
-        for i in range(24):
+        for i in range(cube_model.StateSize.UD_PERM):
             cur_ud_perm = rank.ud_perm_inv(i)
             state_table = [-1]*18
-            for move in G1Space:
+            for move in cube_model.G1Space:
                 self.cube.set_ud_perm(cur_ud_perm)
                 self.cube.move(move)
                 state_table[move] = rank.ud_perm(self.cube.get_ud_perm())

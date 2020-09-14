@@ -7,6 +7,10 @@ from calc_move_table import MoveTable
 import rank
 from cube_model import MoveSpace as MS
 
+"""
+This file moves the cube in the coordinate level according to the move table
+"""
+
 def print_move(move_num):
     for move in MS:
         if move_num == move:

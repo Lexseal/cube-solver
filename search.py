@@ -3,12 +3,15 @@ from collections import deque
 import numpy as np
 import os.path
 from copy import copy
-from cube_model import MoveSpace as MS
-from cube_model import G1Space
+import cube_model
 import move_coord
 import calc_move_table
 import permute
 import rank
+
+"""
+Searches with Iterative Deepening A*
+"""
 
 # load tables
 if not os.path.exists("table/stage1_corners.npy") or\
@@ -30,12 +33,12 @@ stage2_edges = bytearray(np.load("table/stage2_edges.npy"))
 
 def h1(state):
     co_idx = state[0]
-    eg_idx = state[1]*495+state[2]
+    eg_idx = state[1]*cube_model.StateSize.UD_COMB+state[2]
     return max(stage1_corners[co_idx], stage1_edges[eg_idx])
 
 def h2(state):
     co_idx = state[0]
-    eg_idx = state[1]*24+state[2]
+    eg_idx = state[1]*cube_model.StateSize.UD_PERM+state[2]
     return max(stage2_corners[co_idx], stage2_edges[eg_idx])
 
 def is_goal(state):
@@ -64,7 +67,7 @@ def first_stage_search(state, stage1_min):
                     return move_list1
                 continue
             
-            move_space = bytearray(MS)
+            move_space = bytearray(cube_model.MoveSpace)
             random.shuffle(move_space)
             last_face = last_move//3
             for move in move_space:
@@ -108,7 +111,7 @@ def second_stage_search(state, stage2_max):
                     return True, move_list2
                 continue
             
-            move_space = bytearray(G1Space)
+            move_space = bytearray(cube_model.G1Space)
             random.shuffle(move_space)
             last_face = last_move//3
             for move in move_space:

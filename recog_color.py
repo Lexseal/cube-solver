@@ -2,6 +2,11 @@ import cv2
 import numpy as np
 import os
 
+"""
+Very patchy code to read the colors of a rubics cube into a string
+of 54 characters.
+"""
+
 colors = np.load("calibration.npy")
 #print(colors)
 def match_color(H, S, V):

@@ -1,5 +1,10 @@
 from enum import IntEnum
 
+"""
+This file contains all the constants and basic convertions that
+describes a cube.
+"""
+
 class Facelets(IntEnum):
     '''
                  -------------- 
@@ -74,25 +79,12 @@ class MoveSpace(IntEnum):
     B1 = 12; B2 = 13; B3 = 14
     D1 = 15; D2 = 16; D3 = 17
 
-move_lookup = []
-move_lookup.append("U1")
-move_lookup.append("U2")
-move_lookup.append("U3")
-move_lookup.append("L1")
-move_lookup.append("L2")
-move_lookup.append("L3")
-move_lookup.append("F1")
-move_lookup.append("F2")
-move_lookup.append("F3")
-move_lookup.append("R1")
-move_lookup.append("R2")
-move_lookup.append("R3")
-move_lookup.append("B1")
-move_lookup.append("B2")
-move_lookup.append("B3")
-move_lookup.append("D1")
-move_lookup.append("D2")
-move_lookup.append("D3")
+move_lookup = ["U1", "U2", "U3", \
+    "L1", "L2", "L3", \
+        "F1", "F2", "F3", \
+            "R1", "R2", "R3", \
+                "B1", "B2", "B3", \
+                    "D1", "D2", "D3"]
 move_reverse_loopup = {}
 for i, move in enumerate(move_lookup):
     move_reverse_loopup[move] = i
@@ -117,6 +109,15 @@ class G1Space(IntEnum):
     D1 = 15; D2 = 16; D3 = 17
 
 
+class StateSize(IntEnum):
+    CO_ORI = 2187 # 3^8 ways corners can orient
+    EG_ORI = 2048 # 2^12 ways edges can orient
+    UD_COMB = 495 # 12 choose 4 ud edges
+    CO_PERM = 40320 # 8! permutations of the corners
+    EG_PERM = 40320 # (12-4)! permutations of the rest of the edges not in ud slice
+    UD_PERM = 24 # 4! ways ud edges can permutate
+
+
 class Corner(IntEnum):
     '''
     Staring from upper left back.
@@ -132,15 +133,14 @@ class Corner(IntEnum):
     DBR = 6; BRD = 14; RDB = 22
     DLB = 7; LBD = 15; BDL = 23
 
-cor_char_lookup = []
-cor_char_lookup.append(['U', 'B', 'L'])
-cor_char_lookup.append(['U', 'R', 'B'])
-cor_char_lookup.append(['U', 'F', 'R'])
-cor_char_lookup.append(['U', 'L', 'F'])
-cor_char_lookup.append(['D', 'F', 'L'])
-cor_char_lookup.append(['D', 'R', 'F'])
-cor_char_lookup.append(['D', 'B', 'R'])
-cor_char_lookup.append(['D', 'L', 'B'])
+cor_char_lookup = [['U', 'B', 'L'], \
+    ['U', 'R', 'B'], \
+        ['U', 'F', 'R'], \
+            ['U', 'L', 'F'], \
+                ['D', 'F', 'L'], \
+                    ['D', 'R', 'F'], \
+                        ['D', 'B', 'R'], \
+                            ['D', 'L', 'B']] 
 def corner_to_char(corner, print=False):
     cor = corner%8
     cor_char = cor_char_lookup[cor].copy()
@@ -158,7 +158,6 @@ def corner_to_char(corner, print=False):
         cor_char[2] = cor_char[1]        
         cor_char[1] = cor_char[0]        
         cor_char[0] = tmp
-
     return cor_char
 
 cor_num_loopup = {}
@@ -191,21 +190,12 @@ class Edge(IntEnum):
     LF = 10; FL = 22
     LB = 11; BL = 23
 
-eg_char_loopup = []
-eg_char_loopup.append(['U', 'B'])
-eg_char_loopup.append(['U', 'R'])
-eg_char_loopup.append(['U', 'F'])
-eg_char_loopup.append(['U', 'L'])
-eg_char_loopup.append(['D', 'B'])
-eg_char_loopup.append(['D', 'L'])
-eg_char_loopup.append(['D', 'F'])
-eg_char_loopup.append(['D', 'R'])
-eg_char_loopup.append(['R', 'B'])
-eg_char_loopup.append(['R', 'F'])
-eg_char_loopup.append(['L', 'F'])
-eg_char_loopup.append(['L', 'B'])
-
-
+eg_char_loopup = [['U', 'B'], ['U', 'R'], \
+    ['U', 'F'], ['U', 'L'], \
+        ['D', 'B'], ['D', 'L'], \
+            ['D', 'F'], ['D', 'R'], \
+                ['R', 'B'], ['R', 'F'], \
+                    ['L', 'F'], ['L', 'B']]
 def edge_to_char(edge):
     eg = edge%12
     eg_char = eg_char_loopup[eg].copy()
@@ -215,7 +205,6 @@ def edge_to_char(edge):
         tmp = eg_char[0]
         eg_char[0] = eg_char[1]
         eg_char[1] = tmp
-    
     return eg_char
 
 eg_num_loopup = {}

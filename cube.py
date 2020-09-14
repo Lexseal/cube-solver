@@ -2,13 +2,17 @@ import numpy as np
 import random
 from time import time
 import argparse
-from cube_model import MoveSpace as MS
-from cube_model import G1Space
+import cube_model
 from cube_model import Facelets
 from cube_model import corner_to_char, edge_to_char
 from cube_model import str_to_cor, str_to_eg
-from cube_model import convert_move
 import rank
+
+"""
+This file models how a cube should rotate move
+and how to construct a cube either from a sequence of moves
+or from a string of colors
+"""
 
 class Cube:
     def __init__(self, cube_str = None, cube_scramble = None):
@@ -195,52 +199,52 @@ class Cube:
         self.rotateCorner(1, 2)
 
     def move(self, command):
-        if command == MS.U1:
+        if command == cube_model.MoveSpace.U1:
             self.u1()
-        elif command == MS.U2:
+        elif command == cube_model.MoveSpace.U2:
             self.u2()
-        elif command == MS.U3:
+        elif command == cube_model.MoveSpace.U3:
             self.u3()
-        elif command == MS.L1:
+        elif command == cube_model.MoveSpace.L1:
             self.l1()
-        elif command == MS.L2:
+        elif command == cube_model.MoveSpace.L2:
             self.l2()
-        elif command == MS.L3:
+        elif command == cube_model.MoveSpace.L3:
             self.l3()
-        elif command == MS.F1:
+        elif command == cube_model.MoveSpace.F1:
             self.f1()
-        elif command == MS.F2:
+        elif command == cube_model.MoveSpace.F2:
             self.f2()
-        elif command == MS.F3:
+        elif command == cube_model.MoveSpace.F3:
             self.f3()
-        elif command == MS.R1:
+        elif command == cube_model.MoveSpace.R1:
             self.r1()
-        elif command == MS.R2:
+        elif command == cube_model.MoveSpace.R2:
             self.r2()
-        elif command == MS.R3:
+        elif command == cube_model.MoveSpace.R3:
             self.r3()
-        elif command == MS.B1:
+        elif command == cube_model.MoveSpace.B1:
             self.b1()
-        elif command == MS.B2:
+        elif command == cube_model.MoveSpace.B2:
             self.b2()
-        elif command == MS.B3:
+        elif command == cube_model.MoveSpace.B3:
             self.b3()
-        elif command == MS.D1:
+        elif command == cube_model.MoveSpace.D1:
             self.d1()
-        elif command == MS.D2:
+        elif command == cube_model.MoveSpace.D2:
             self.d2()
-        elif command == MS.D3:
+        elif command == cube_model.MoveSpace.D3:
             self.d3()
 
     @staticmethod
-    def rotateColor(str):
+    def rotate_color(str):
         return str[2]+str[5]+str[8]+str[1]+str[4]+str[7]+str[0]+str[3]+str[6]
 
     @staticmethod
-    def rotateColorRev(str):
+    def rotate_color_rev(str):
         return str[6]+str[3]+str[0]+str[7]+str[4]+str[1]+str[8]+str[5]+str[2]
 
-    def rotateZ(self):
+    def rotate_z(self):
         cube_str = self.__str__()
         cube_str = cube_str.replace("F", "r")
         cube_str = cube_str.replace("R", "b")
@@ -250,16 +254,16 @@ class Cube:
         cube_str = cube_str.replace("l", "L")
         cube_str = cube_str.replace("b", "B")
         cube_str = cube_str.replace("r", "R")
-        up_face = self.rotateColor(cube_str[0:9])
+        up_face = self.rotate_color(cube_str[0:9])
         left_face = cube_str[9:18]
         front_face = cube_str[18:27]
         right_face = cube_str[27:36]
         back_face = cube_str[36:45]
-        down_face = self.rotateColorRev(cube_str[45:54])
+        down_face = self.rotate_color_rev(cube_str[45:54])
         cube_str = up_face+back_face+left_face+front_face+right_face+down_face
         self.read_str(cube_str)
 
-    def rotateXRev(self):
+    def rotate_x_rev(self):
         cube_str = self.__str__()
         cube_str = cube_str.replace("U", "r")
         cube_str = cube_str.replace("R", "d")
@@ -269,30 +273,30 @@ class Cube:
         cube_str = cube_str.replace("d", "D")
         cube_str = cube_str.replace("l", "L")
         cube_str = cube_str.replace("u", "U")
-        up_face = self.rotateColorRev(cube_str[0:9])
-        left_face = self.rotateColorRev(cube_str[9:18])
-        front_face = self.rotateColorRev(cube_str[18:27])
-        right_face = self.rotateColorRev(cube_str[27:36])
-        back_face = self.rotateColor(cube_str[36:45])
-        down_face = self.rotateColorRev(cube_str[45:54])
+        up_face = self.rotate_color_rev(cube_str[0:9])
+        left_face = self.rotate_color_rev(cube_str[9:18])
+        front_face = self.rotate_color_rev(cube_str[18:27])
+        right_face = self.rotate_color_rev(cube_str[27:36])
+        back_face = self.rotate_color(cube_str[36:45])
+        down_face = self.rotate_color_rev(cube_str[45:54])
         cube_str = left_face+down_face+front_face+up_face+back_face+right_face
         self.read_str(cube_str)
 
     @staticmethod
-    def flipFace(face):
+    def flip_face(face):
         return face[2]+face[1]+face[0]+face[5]+face[4]+face[3]+face[8]+face[7]+face[6]
 
-    def flipCube(self):
+    def flip_cube(self):
         cube_str = self.__str__()
         cube_str = cube_str.replace("L", "r")
         cube_str = cube_str.replace("R", "L")
         cube_str = cube_str.replace("r", "R") # replace left with right
-        up_face = self.flipFace(cube_str[0:9])
-        left_face = self.flipFace(cube_str[27:36]) # gets the right face
-        front_face = self.flipFace(cube_str[18:27])
-        right_face = self.flipFace(cube_str[9:18]) # gets the left face
-        back_face = self.flipFace(cube_str[36:45])
-        down_face = self.flipFace(cube_str[45:54]) # get faces
+        up_face = self.flip_face(cube_str[0:9])
+        left_face = self.flip_face(cube_str[27:36]) # gets the right face
+        front_face = self.flip_face(cube_str[18:27])
+        right_face = self.flip_face(cube_str[9:18]) # gets the left face
+        back_face = self.flip_face(cube_str[36:45])
+        down_face = self.flip_face(cube_str[45:54]) # get faces
         cube_str = up_face+left_face+front_face+right_face+back_face+down_face
         self.read_str(cube_str)
 
@@ -355,7 +359,7 @@ class Cube:
     def shuffle_G1(self, N):
         move_list = []
         for _ in range(N):
-            rand_move = random.sample(list(G1Space), 1)[0]
+            rand_move = random.sample(list(cube_model.G1Space), 1)[0]
             self.move(rand_move)
             move_list.append(rand_move)
         return move_list
@@ -416,7 +420,7 @@ class Cube:
         scramble_list = cube_scramble.split(" ")
         for move in scramble_list:
             #print(move)
-            self.move(convert_move(move))
+            self.move(cube_model.convert_move(move))
             #print(self)
             #print(list(self.corners), list(self.edges))
 
