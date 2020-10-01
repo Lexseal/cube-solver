@@ -2,6 +2,10 @@ body {
     margin: 0;
 }
 
-canvas {
-    display: block;
+ul {
+    list-style: none;
+}
+
+button {
+    margin-left: 20px;
 }
