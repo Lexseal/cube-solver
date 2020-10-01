@@ -15,14 +15,17 @@ or from a string of colors
 """
 
 class Cube:
-    def __init__(self, cube_str = None, cube_scramble = None):
+    def __init__(self, cube_str = None, cube_scramble = None, numeric_scramble = False):
         ''' Default position is solved, but can be changed to anything. '''
         self.corners = bytearray(range(8))
         self.edges = bytearray(range(12))
         if cube_str != None:
             self.read_str(cube_str)
         elif cube_scramble != None:
-            self.read_scramble(cube_scramble)
+            if numeric_scramble:
+                self.read_scramble_num(cube_scramble)
+            else:
+                self.read_scramble(cube_scramble)
 
     def swap(self, arr, idx1, idx2):
         tmp = arr[idx1]
@@ -423,6 +426,11 @@ class Cube:
             self.move(cube_model.convert_move(move))
             #print(self)
             #print(list(self.corners), list(self.edges))
+
+    def read_scramble_num(self, cube_scramble):
+        scramble_list = cube_scramble.split(" ")
+        for move in scramble_list:
+            self.move(int(move))
 
 def verify(N):
     cube = Cube()

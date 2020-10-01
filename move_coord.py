@@ -60,14 +60,20 @@ def cube_from_str(cube_str):
     co_ori = rank.co_ori(cube.get_co_ori())
     eg_ori = rank.eg_ori(cube.get_eg_ori())
     ud_edges = rank.ud_edges(cube.get_ud_edges())
-    return array('I', [co_ori, eg_ori, ud_edges]), cube
+    init_state = array('I', [co_ori, eg_ori, ud_edges])
+    init_state.append(255) # use 255 to denote the -1st move
+    init_state.append(0) # takes 0 moves to get there
+    return init_state, cube
 
-def cube_from_scramble(scramble):
-    cube = Cube(cube_scramble=scramble)
+def cube_from_scramble(scramble, numeric_scramble=False):
+    cube = Cube(cube_scramble=scramble, numeric_scramble=numeric_scramble)
     co_ori = rank.co_ori(cube.get_co_ori())
     eg_ori = rank.eg_ori(cube.get_eg_ori())
     ud_edges = rank.ud_edges(cube.get_ud_edges())
-    return array('I', [co_ori, eg_ori, ud_edges]), cube
+    init_state = array('I', [co_ori, eg_ori, ud_edges])
+    init_state.append(255) # use 255 to denote the -1st move
+    init_state.append(0) # takes 0 moves to get there
+    return init_state, cube
 
 def verify():
     cube = Cube()

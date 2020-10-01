@@ -1,13 +1,6 @@
 THREE.Object3D.prototype.rotateAroundWorldAxis = function() {
-
-    // rotate object around axis in world space (the axis passes through point)
-    // axis is assumed to be normalized
-    // assumes object does not have a rotated parent
-
     var q = new THREE.Quaternion();
-
     return function rotateAroundWorldAxis( point, axis, angle ) {
-
         q.setFromAxisAngle( axis, angle );
 
         this.applyQuaternion( q );
@@ -17,17 +10,17 @@ THREE.Object3D.prototype.rotateAroundWorldAxis = function() {
         this.position.add( point );
 
         return this;
-
     }
-
 }(); // patch
 
 var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+var nav = document.getElementById("navbar");
+var navHeight = nav.scrollHeight*1.5;
+var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / (window.innerHeight-navHeight), 0.1, 1000 );
 camera.position.z = 5;
 
-var renderer = new THREE.WebGLRenderer({antialias: true});
-renderer.setSize( window.innerWidth, window.innerHeight );
+var renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+renderer.setSize( window.innerWidth, (window.innerHeight-navHeight) );
 document.body.appendChild( renderer.domElement );
 
 var cube = new THREE.Group();
@@ -45,8 +38,8 @@ function createCube() {
                 geometry.faces[5].color.setHex(0xFF3361);
                 geometry.faces[6].color.setHex(0xFF7D33);
                 geometry.faces[7].color.setHex(0xFF7D33);
-                geometry.faces[8].color.setHex(0xFFFFFF);
-                geometry.faces[9].color.setHex(0xFFFFFF);
+                geometry.faces[8].color.setHex(0xEEEEEE);
+                geometry.faces[9].color.setHex(0xEEEEEE);
                 geometry.faces[10].color.setHex(0xF9FF33);
                 geometry.faces[11].color.setHex(0xF9FF33);
                 var cubbie = new THREE.Mesh(geometry, material);
@@ -68,11 +61,11 @@ function rotate(indices, point, axis, degree) {
     }
     var length = indices.length;
 
-    console.log(cube.children);
+    //console.log(cube.children);
     var tmp = cube.children[indices[length-1]];
     for (var i = length-1; i >= 2; i-=2) {
-        console.log(indices[i], cube.children[indices[i]])
-        console.log(indices[i-2], cube.children[indices[i-2]])
+        //console.log(indices[i], cube.children[indices[i]])
+        //console.log(indices[i-2], cube.children[indices[i-2]])
         cube.children[indices[i]] = cube.children[indices[i-2]];
     }
     cube.children[indices[1]] = tmp;
@@ -82,7 +75,7 @@ function rotate(indices, point, axis, degree) {
         cube.children[indices[i]] = cube.children[indices[i-2]];
     }
     cube.children[indices[0]] = tmp;
-    console.log(cube.children);
+    //console.log(cube.children);
 }
 
 function U() {
@@ -133,24 +126,49 @@ function B() {
     rotate(indices, point, axis, degree);
 }
 
+function move_by_num(move_num) {
+    switch(move_num) {
+        case 0: U(); break;
+        case 1: U(); U(); break;
+        case 2: U(); U(); U(); break;
+        case 3: L(); break;
+        case 4: L(); L(); break;
+        case 5: L(); L(); L(); break;
+        case 6: F(); break;
+        case 7: F(); F(); break;
+        case 8: F(); F(); F(); break;
+        case 9: R(); break;
+        case 10: R(); R(); break;
+        case 11: R(); R(); R(); break;
+        case 12: B(); break;
+        case 13: B(); B(); break;
+        case 14: B(); B(); B(); break;
+        case 15: D(); break;
+        case 16: D(); D(); break;
+        case 17: D(); D(); D(); break;
+    }
+    if (move_str.length == 0) move_str += move_num.toString();
+    else move_str += "_"+move_num.toString();
+}
+
 async function onKeyDown(event) {
     if (event.keyCode == 85) { // up
-        U();
+        move_by_num(0);
         console.log("U");
     } else if (event.keyCode == 68) { // down
-        D();
+        move_by_num(15);
         console.log("D");
     } else if (event.keyCode == 76) { // left
-        L();
+        move_by_num(3);
         console.log("L");
     } else if (event.keyCode == 82) { // right
-        R();
+        move_by_num(9);
         console.log("R");
     } else if (event.keyCode == 70) { // front
-        F();
+        move_by_num(6);
         console.log("F");
     } else if (event.keyCode == 66) { // back
-        B();
+        move_by_num(12);
         console.log("B");
     } else if (event.keyCode == 37) { // y-- 
         cube.rotation.y -= 0.1;
@@ -172,3 +190,38 @@ createCube();
 animate();
 
 document.addEventListener("keydown", onKeyDown);
+window.addEventListener('resize', function() {
+   renderer.setSize(window.innerWidth, (window.innerHeight-navHeight));
+   camera.aspect = window.innerWidth / (window.innerHeight-navHeight);
+   camera.updateProjectionMatrix();
+});
+
+move_str = ""
+function shuffleRequest() {
+    move_str = ""
+    for (var i = 0; i < 20; i++) {
+        var move_num = Math.floor(Math.random()*18);
+        move_by_num(move_num);
+    }
+}
+
+function move_solution(solution) {
+    var move_list = solution.split(",");
+    console.log(move_list);
+    move_list.forEach(move => move_by_num(parseInt(move)));
+}
+
+function solveRequest() {
+    url = "http://localhost:8000/solve" + move_str;
+    console.log(url);
+    fetch(url)
+    .then(response => response.text())
+    .then(move_solution)
+    //.catch(console.log("something went wrong"))
+    move_str = "";
+}
+
+var shuffleBtn = document.getElementById("shuffleBtn");
+shuffleBtn.addEventListener("click", shuffleRequest);
+var solveBtn = document.getElementById("solveBtn");
+solveBtn.addEventListener("click", solveRequest);

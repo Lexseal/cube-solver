@@ -28,7 +28,7 @@ def deposit_result(result):
     rotation, solution = result
     pool.terminate()
 
-def solve(init_cube, init_state, max_move, rotation):
+def solve(init_cube, init_state, max_move=23, rotation=0):
     stage1_min = 0
     times_failed = 0
     solution_found = False
@@ -78,6 +78,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--display", action="store_true", help="print out solve")
     parser.add_argument("-n", "--number", type=int, help="number of solves")
     parser.add_argument("-c", "--camera", action="store_true", help="solve from camera")
+    parser.add_argument("-nm", "--numeric_move", type=str, help="solve from a numerical scrmable")
     args = parser.parse_args()
 
     max_move = 23
@@ -95,6 +96,8 @@ if __name__ == "__main__":
             init_state, init_cube = move_coord.cube_from_str(args.str)
         elif args.moves != None:
             init_state, init_cube = move_coord.cube_from_scramble(args.moves)
+        elif args.numeric_move != None:
+            init_state, init_cube = move_coord.cube_from_scramble(args.numeric_move, numeric_scramble=True)
         elif args.camera:
             import recog_color
             cube_str = recog_color.scan()
@@ -102,8 +105,6 @@ if __name__ == "__main__":
             init_state, init_cube = move_coord.cube_from_str(cube_str)
         else:
             init_state, shuffle_list, init_cube = move_coord.shuffle(num_of_shuffles)
-        init_state.append(255) # use 255 to denote the -1st move
-        init_state.append(0) # takes 0 moves to get there
         # init_state = [co_ori, eg_ori, ud_edges, last_move, depth]
 
         global pool
