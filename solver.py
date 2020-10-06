@@ -15,6 +15,18 @@ Each thread has a different cube that is rotated at 120 degree
 from one another on the xz axis
 """
 
+def rotate_moves(move_list):
+    ''' F->L L->U U->F -3
+        B->R R->D D->B -3 '''
+    for i, move in enumerate(move_list):
+        if move < 9:
+            move_list[i] = (move-3)%9
+        else:
+            move -= 9
+            move = (move-3)%9
+            move += 9
+            move_list[i] = move       
+
 def print_move(move_num):
     for move in MS:
         if move_num == move:
@@ -69,6 +81,7 @@ def solve(init_cube, init_state, max_move=23, rotation=0):
                 stage1_min = min(stage1_min+1, 12) # can't be greater than 12
 
 global rotation
+rotation = 0
 global solution
 global pool
 if __name__ == "__main__":
@@ -87,7 +100,6 @@ if __name__ == "__main__":
     if args.number != None:
         num_of_solves = args.number
     time_list = []
-    global solution
     solution = []
     for n in range(num_of_solves):
 
@@ -106,15 +118,16 @@ if __name__ == "__main__":
         else:
             init_state, shuffle_list, init_cube = move_coord.shuffle(num_of_shuffles)
         # init_state = [co_ori, eg_ori, ud_edges, last_move, depth]
-
-        global pool
-        pool = multiprocessing.Pool()
+        
         start_time = time()
-        for i in range(3): # do 6 transformations
+        pool = multiprocessing.Pool()
+        for i in range(3): # do 3 transformations
             cube = deepcopy(init_cube)
             for _ in range(i): # rotate
                 cube.rotate_z()
-                cube.rotate_x_rev()
+                for _ in range(3):
+                    cube.rotate_x_rev() # 3 reverse is 1 forward
+            #print(cube)
             state = copy(init_state)
             state[0] = rank.co_ori(cube.get_co_ori())
             state[1] = rank.eg_ori(cube.get_eg_ori())
@@ -124,6 +137,11 @@ if __name__ == "__main__":
         pool.close()
         pool.join()
 
+        #for move in solution:
+        #    print_move(move)
+
+        for _ in range(rotation):
+            rotate_moves(solution)
         print("#", n+1, "rot:", rotation, "total moves:", len(solution), "took", time() - start_time)
         time_list.append(time() - start_time)
         
@@ -131,6 +149,7 @@ if __name__ == "__main__":
             for move in solution:
                 print_move(move)
 
+        #print(init_cube)
         #for move in solution:
         #    init_cube.move(move)
         #print(init_cube)

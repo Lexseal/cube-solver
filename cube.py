@@ -285,6 +285,25 @@ class Cube:
         cube_str = left_face+down_face+front_face+up_face+back_face+right_face
         self.read_str(cube_str)
 
+    def rotate_y_rev(self):
+        cube_str = self.__str__()
+        cube_str = cube_str.replace("U", "b")
+        cube_str = cube_str.replace("B", "d")
+        cube_str = cube_str.replace("D", "f")
+        cube_str = cube_str.replace("F", "u")
+        cube_str = cube_str.replace("b", "B")
+        cube_str = cube_str.replace("d", "D")
+        cube_str = cube_str.replace("f", "F")
+        cube_str = cube_str.replace("u", "U")
+        up_face = self.rotate_color(self.rotate_color(cube_str[0:9])) # twice
+        left_face = self.rotate_color(cube_str[9:18])
+        front_face = cube_str[18:27]
+        right_face = self.rotate_color_rev(cube_str[27:36])
+        back_face = self.rotate_color(self.rotate_color(cube_str[36:45])) # twice
+        down_face = cube_str[45:54]
+        cube_str = front_face+left_face+down_face+right_face+up_face+back_face
+        self.read_str(cube_str)
+
     @staticmethod
     def flip_face(face):
         return face[2]+face[1]+face[0]+face[5]+face[4]+face[3]+face[8]+face[7]+face[6]

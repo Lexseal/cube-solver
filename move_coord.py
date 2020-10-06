@@ -45,35 +45,27 @@ def stage2_move(state, move):
     state[1] = eg_perm_table[state[1]][move]
     state[2] = ud_perm_table[state[2]][move]
 
+def get_init_state(cube):
+    co_ori = rank.co_ori(cube.get_co_ori())
+    eg_ori = rank.eg_ori(cube.get_eg_ori())
+    ud_edges = rank.ud_edges(cube.get_ud_edges())
+    init_state = array('I', [co_ori, eg_ori, ud_edges])
+    init_state.append(255) # use 255 to denote the -1st move
+    init_state.append(0) # takes 0 moves to get there
+    return init_state
+
 def shuffle(N):
     cube = Cube()
     move_list = cube.shuffle(N)
-
-    co_ori = rank.co_ori(cube.get_co_ori())
-    eg_ori = rank.eg_ori(cube.get_eg_ori())
-    ud_edges = rank.ud_edges(cube.get_ud_edges())
-
-    return array('I', [co_ori, eg_ori, ud_edges]), move_list, cube
+    return get_init_state(cube), move_list, cube
 
 def cube_from_str(cube_str):
     cube = Cube(cube_str=cube_str)
-    co_ori = rank.co_ori(cube.get_co_ori())
-    eg_ori = rank.eg_ori(cube.get_eg_ori())
-    ud_edges = rank.ud_edges(cube.get_ud_edges())
-    init_state = array('I', [co_ori, eg_ori, ud_edges])
-    init_state.append(255) # use 255 to denote the -1st move
-    init_state.append(0) # takes 0 moves to get there
-    return init_state, cube
+    return get_init_state(cube), cube
 
 def cube_from_scramble(scramble, numeric_scramble=False):
     cube = Cube(cube_scramble=scramble, numeric_scramble=numeric_scramble)
-    co_ori = rank.co_ori(cube.get_co_ori())
-    eg_ori = rank.eg_ori(cube.get_eg_ori())
-    ud_edges = rank.ud_edges(cube.get_ud_edges())
-    init_state = array('I', [co_ori, eg_ori, ud_edges])
-    init_state.append(255) # use 255 to denote the -1st move
-    init_state.append(0) # takes 0 moves to get there
-    return init_state, cube
+    return get_init_state(cube), cube
 
 def verify():
     cube = Cube()
