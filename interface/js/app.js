@@ -126,7 +126,7 @@ function B() {
     rotate(indices, point, axis, degree);
 }
 
-function move_by_num(move_num) {
+function move_by_num(move_num, logging=true) {
     switch(move_num) {
         case 0: U(); break;
         case 1: U(); U(); break;
@@ -147,6 +147,8 @@ function move_by_num(move_num) {
         case 16: D(); D(); break;
         case 17: D(); D(); D(); break;
     }
+    if (!logging) return;
+    
     if (move_str.length == 0) move_str += move_num.toString();
     else move_str += "_"+move_num.toString();
 }
@@ -208,7 +210,7 @@ function shuffleRequest() {
 function move_solution(solution) {
     var move_list = solution.split(",");
     console.log(move_list);
-    move_list.forEach(move => move_by_num(parseInt(move)));
+    move_list.forEach(move => move_by_num(parseInt(move), false));
 }
 
 function solveRequest() {
