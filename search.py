@@ -19,10 +19,10 @@ if not os.path.exists("table/stage1_corners.npy") or\
     not os.path.exists("table/stage2_corners.npy") or\
     not os.path.exists("table/stage2_edges.npy"):
     print("making pruning tables...")
-    permute.calc_stage1_corners()
-    permute.calc_stage1_edges()
-    permute.calc_stage2_corners()
-    permute.calc_stage2_egdes()
+    permute.calc_stage1_corners_ud()
+    permute.calc_stage1_edges_ud()
+    permute.calc_stage2_corners_ud()
+    permute.calc_stage2_egdes_ud()
     print("table finished. please run the program again")
     exit(0)
 
@@ -32,13 +32,13 @@ stage2_corners = bytearray(np.load("table/stage2_corners.npy"))
 stage2_edges = bytearray(np.load("table/stage2_edges.npy"))
 
 def h1(state):
-    co_idx = state[0]
-    eg_idx = state[1]*cube_model.StateSize.UD_COMB+state[2]
+    co_idx = state[0]*cube_model.StateSize.UD_COMB + state[2]
+    eg_idx = state[1]*cube_model.StateSize.UD_COMB + state[2]
     return max(stage1_corners[co_idx], stage1_edges[eg_idx])
 
 def h2(state):
-    co_idx = state[0]
-    eg_idx = state[1]*cube_model.StateSize.UD_PERM+state[2]
+    co_idx = state[0]*cube_model.StateSize.UD_PERM + state[2]
+    eg_idx = state[1]*cube_model.StateSize.UD_PERM + state[2]
     return max(stage2_corners[co_idx], stage2_edges[eg_idx])
 
 def is_goal(state):
