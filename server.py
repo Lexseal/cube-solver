@@ -1,6 +1,7 @@
 import http.server # Our http server handler for http requests
 import socketserver # Establish the TCP Socket connections
 import os
+import webbrowser
 from move_coord import cube_from_scramble
 from solver import solve
 
@@ -28,4 +29,5 @@ Handler = MyHttpRequestHandler
  
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
     print("Http Server Serving at port", PORT)
+    webbrowser.open_new_tab("interface/index.html")
     httpd.serve_forever()
