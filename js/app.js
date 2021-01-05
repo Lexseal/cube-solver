@@ -11,7 +11,7 @@ THREE.Object3D.prototype.rotateAroundWorldAxis = function() {
 
         return this;
     }
-}(); // patch
+}(); // patch for rotation around a point in space
 
 var scene = new THREE.Scene();
 var nav = document.getElementById("navbar");
@@ -183,24 +183,7 @@ async function onKeyDown(event) {
     }
 }
 
-function animate() {
-    requestAnimationFrame(animate);
-	renderer.render(scene, camera);
-}
-
-createCube();
-animate();
-
-document.addEventListener("keydown", onKeyDown);
-window.addEventListener('resize', function() {
-   renderer.setSize(window.innerWidth, (window.innerHeight-navHeight));
-   camera.aspect = window.innerWidth / (window.innerHeight-navHeight);
-   camera.updateProjectionMatrix();
-});
-
-move_str = ""
 function shuffleRequest() {
-    move_str = ""
     for (var i = 0; i < 20; i++) {
         var move_num = Math.floor(Math.random()*18);
         move_by_num(move_num);
@@ -223,7 +206,23 @@ function solveRequest() {
     move_str = "";
 }
 
+var move_str = ""
 var shuffleBtn = document.getElementById("shuffleBtn");
 shuffleBtn.addEventListener("click", shuffleRequest);
 var solveBtn = document.getElementById("solveBtn");
 solveBtn.addEventListener("click", solveRequest);
+
+document.addEventListener("keydown", onKeyDown);
+window.addEventListener('resize', function() {
+   renderer.setSize(window.innerWidth, (window.innerHeight-navHeight));
+   camera.aspect = window.innerWidth / (window.innerHeight-navHeight);
+   camera.updateProjectionMatrix();
+});
+
+function animate() {
+    requestAnimationFrame(animate);
+	renderer.render(scene, camera);
+}
+
+createCube();
+animate();
