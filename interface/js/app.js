@@ -13,22 +13,11 @@ THREE.Object3D.prototype.rotateAroundWorldAxis = function() {
     }
 }(); // patch for rotation around a point in space
 
-var scene = new THREE.Scene();
-var nav = document.getElementById("navbar");
-var navHeight = nav.scrollHeight*1.5;
-var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / (window.innerHeight-navHeight), 0.1, 1000 );
-camera.position.z = 5;
-
-var renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
-renderer.setSize( window.innerWidth, (window.innerHeight-navHeight) );
-document.body.appendChild( renderer.domElement );
-
-var cube = new THREE.Group();
 function createCube() {
     for (var i = -1; i < 2; i++) {
         for (var j = -1; j < 2; j++) {
             for (var k = -1; k < 2; k++) {
-                var geometry = new THREE.CubeGeometry(0.95, 0.95, 0.95);
+                var geometry = new THREE.CubeGeometry(0.97, 0.97, 0.97);
                 var material = new THREE.MeshBasicMaterial({color:0xffffff, vertexColors: true});
                 geometry.faces[0].color.setHex(0x33FF57);
                 geometry.faces[1].color.setHex(0x33FF57);
@@ -49,10 +38,6 @@ function createCube() {
         }
     }
     scene.add(cube);
-}
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function rotate(indices, point, axis, degree) {
@@ -126,6 +111,11 @@ function B() {
     rotate(indices, point, axis, degree);
 }
 
+function changeText(str) {
+    var moveDisplay = document.querySelector("nav>ul>span");
+    moveDisplay.innerHTML = str;
+}
+
 function move_by_num(move_num, logging=true) {
     switch(move_num) {
         case 0: U(); break;
@@ -147,13 +137,14 @@ function move_by_num(move_num, logging=true) {
         case 16: D(); D(); break;
         case 17: D(); D(); D(); break;
     }
-    if (!logging) return;
+    if (!logging) return; // stop right there if no logging required
     
-    if (move_str.length == 0) move_str += move_num.toString();
+    if (move_str.length == 0) move_str = move_num.toString();
     else move_str += "_"+move_num.toString();
+    changeText("moves: " + move_str);
 }
 
-async function onKeyDown(event) {
+function onKeyDown(event) {
     if (event.keyCode == 85) { // up
         move_by_num(0);
         console.log("U");
@@ -183,6 +174,25 @@ async function onKeyDown(event) {
     }
 }
 
+function onMouseMove(event) {
+    if (!downFlag) return; // nothing to do
+    var cur_x = event.offsetX;
+    var cur_y = event.offsetY; // get new coordinates
+    var dx = cur_x-last_x;
+    var dy = cur_y-last_y; // calculate change
+    last_x = cur_x;
+    last_y = cur_y; // reset last coordinates
+
+    cube.rotation.y += dx/200;
+    cube.rotation.x += dy/200;
+}
+
+function windowResize() {
+    renderer.setSize(window.innerWidth, (window.innerHeight-2*navHeight));
+    camera.aspect = window.innerWidth / (window.innerHeight-2*navHeight);
+    camera.updateProjectionMatrix();
+}
+
 function shuffleRequest() {
     for (var i = 0; i < 20; i++) {
         var move_num = Math.floor(Math.random()*18);
@@ -191,6 +201,7 @@ function shuffleRequest() {
 }
 
 function move_solution(solution) {
+    changeText("solution: " + solution);
     var move_list = solution.split(",");
     console.log(move_list);
     move_list.forEach(move => move_by_num(parseInt(move), false));
@@ -206,23 +217,44 @@ function solveRequest() {
     move_str = "";
 }
 
+function animate() {
+    requestAnimationFrame(animate);
+	renderer.render(scene, camera);
+}
+
+var scene = new THREE.Scene();
+var nav = document.getElementById("navbar");
+var navHeight = nav.offsetHeight;
+var camera = new THREE.PerspectiveCamera( 70, window.innerWidth / (window.innerHeight-2*navHeight), 1, 1000 );
+camera.position.z = 5;
+
+var renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+renderer.setSize( window.innerWidth, (window.innerHeight-2*navHeight) );
+document.body.appendChild( renderer.domElement );
+
 var move_str = ""
 var shuffleBtn = document.getElementById("shuffleBtn");
 shuffleBtn.addEventListener("click", shuffleRequest);
 var solveBtn = document.getElementById("solveBtn");
 solveBtn.addEventListener("click", solveRequest);
 
-document.addEventListener("keydown", onKeyDown);
-window.addEventListener('resize', function() {
-   renderer.setSize(window.innerWidth, (window.innerHeight-navHeight));
-   camera.aspect = window.innerWidth / (window.innerHeight-navHeight);
-   camera.updateProjectionMatrix();
+var downFlag = false;
+var last_x, last_y;
+document.addEventListener("mousedown", event => {
+    downFlag = true;
+    last_x = event.offsetX;
+    last_y = event.offsetY; // log last x, y position
 });
+document.addEventListener("mouseup", _ => downFlag = false);
+document.addEventListener("mousemove", onMouseMove);
+document.addEventListener("keydown", onKeyDown);
+document.addEventListener("wheel", event => {
+    camera.position.z += event.deltaY/500;
+    if (camera.position.z <= 4) camera.position.z = 4;
+    else if (camera.position.z >= 10) camera.position.z = 10;
+})
+window.addEventListener('resize', windowResize);
 
-function animate() {
-    requestAnimationFrame(animate);
-	renderer.render(scene, camera);
-}
-
-createCube();
+var cube = new THREE.Group(); // make a container for cube
+createCube(); // add all pieces to the cube
 animate();
