@@ -63,7 +63,7 @@ def first_stage_search(state, stage1_min):
             if cur_depth == max_depth:
                 if is_goal(cur_state):
                     move_list1 = list(move_stack)[1:cur_depth+1]
-                    #print("stage1 victory", cur_depth+1)
+                    # print("stage1 victory", cur_depth+1)
                     return move_list1
                 continue
             
@@ -106,7 +106,7 @@ def second_stage_search(state, stage2_max):
 
             if cur_depth == max_depth:
                 if is_goal(cur_state):
-                    #print("stage2 victory", cur_depth)
+                    # print("stage2 victory", cur_depth)
                     move_list2 = list(move_stack)[1:cur_depth+1]
                     return True, move_list2
                 continue

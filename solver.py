@@ -60,7 +60,8 @@ def solve_single_thread(cube, max_move=23, rotation=0):
         #print("second stage started", stage1_min, max_move-len(move_list1))
         # state2 = [co_perm, eg_perm, ud_perm, last_move, depth]
         state2 = move_coord.stage2_coord(tmp_cube)
-        state2[-2] = move_list1[-1] # in this case we know what the last move is
+        if len(move_list1) > 0:
+            state2[-2] = move_list1[-1] # in this case we know what the last move is
 
         stage2_max = max_move-len(move_list1) # subtract the moves used by moving to G1
 
@@ -148,8 +149,8 @@ if __name__ == "__main__":
         time_list.append(time() - start_time)
         
         if args.display:
+            print(init_cube)
             for move in solution:
-                print(init_cube)
                 print_move(move)
 
     print("Avg time:", sum(time_list)/len(time_list))

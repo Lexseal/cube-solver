@@ -19,9 +19,9 @@ class Cube:
         ''' Default position is solved, but can be changed to anything. '''
         self.corners = bytearray(range(8))
         self.edges = bytearray(range(12))
-        if cube_str != None:
+        if cube_str is not None:
             self.read_str(cube_str)
-        elif cube_scramble != None:
+        elif cube_scramble is not None:
             if numeric_scramble:
                 self.read_scramble_num(cube_scramble)
             else:
@@ -439,8 +439,14 @@ class Cube:
         self.edges[11] = str_to_eg(cube_str[Facelets.L4]+cube_str[Facelets.B6])
 
     def read_scramble(self, cube_scramble):
+        if len(cube_scramble) == 0:
+            print("illegal scrable")
+            exit(1)
         scramble_list = cube_scramble.split(" ")
         for move in scramble_list:
+            if move[0] not in "UDLRFB":
+                print("illegal scamble")
+                exit(1)
             #print(move)
             self.move(cube_model.convert_move(move))
             #print(self)
