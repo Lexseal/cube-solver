@@ -3,7 +3,7 @@ import socketserver # Establish the TCP Socket connections
 import os
 import webbrowser
 from move_coord import cube_from_scramble
-from solver import solve
+import solver
 
 PORT = 8000
  
@@ -20,8 +20,8 @@ class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             num_move = self.path[6:]
             num_move = num_move.replace("_", " ") # replace with space
-            init_state, init_cube = cube_from_scramble(num_move, numeric_scramble=True)
-            _, solution = solve(init_cube, init_state)
+            init_cube = cube_from_scramble(num_move, numeric_scramble=True)
+            solution = solver.solve(init_cube)
             solution = ",".join(map(str, solution))
             self.wfile.write(solution.encode())    
 

@@ -111,10 +111,10 @@ def second_stage_search(state, stage2_max):
                     return True, move_list2
                 continue
             
-            move_space = bytearray(cube_model.G1Space)
-            random.shuffle(move_space)
+            # move_space = bytearray(cube_model.G1Space)
+            # random.shuffle(move_space)
             last_face = last_move//3
-            for move in move_space:
+            for move in cube_model.G1Space:
                 cur_face = move//3
                 if cur_face == last_face: continue
                 elif cur_face == 3 and last_face == 1: continue
