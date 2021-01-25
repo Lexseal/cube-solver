@@ -40,50 +40,14 @@ def deposit_result(result):
     rotation, solution = result
     pool.terminate()
 
-def solve_single_thread(cube, max_move=23, rotation=0):
-    stage1_min = 0
-    times_failed = 0
-    solution_found = False
-    # state1 = [co_ori, eg_ori, ud_edges, last_move, depth]
-    state1 = move_coord.stage1_coord(cube) # stage 1 cube represented by 3 coordinates
-    while not solution_found:
-        move_list1 = search.first_stage_search(state1, stage1_min)
-        stage1_min = len(move_list1) # set min depth
-
-        # here we need a copy of the original cube because we can't guarentee a solution
-        tmp_cube = deepcopy(cube)
-        for move in move_list1:
-            tmp_cube.move(move)
-            #print_move(move)
-        # print(list(tmp_cube.corners), list(tmp_cube.edges))
-
-        #print("second stage started", stage1_min, max_move-len(move_list1))
-        # state2 = [co_perm, eg_perm, ud_perm, last_move, depth]
-        state2 = move_coord.stage2_coord(tmp_cube)
-        if len(move_list1) > 0:
-            state2[-2] = move_list1[-1] # in this case we know what the last move is
-
-        stage2_max = max_move-len(move_list1) # subtract the moves used by moving to G1
-
-        solution_found, move_list2 = search.second_stage_search(state2, stage2_max)
-
-        if solution_found:
-            '''for move in move_list2:
-                cube.move(move)
-                print_move(move)
-            print(list(cube.corners), list(cube.edges))'''
-            return rotation, move_list1+move_list2
-        else: # huristics to make stage1 solution longer so stage2 will be easier
-            times_failed += 1
-            if stage1_min < 9:
-                stage1_min += 1
-            elif times_failed%7 == 0:
-                stage1_min = min(stage1_min+1, 12) # can't be greater than 12
+def solve_single_thread(cube, max_move=22, rotation=0):
+    solution = search.search(cube, max_move)
+    return rotation, solution
 
 rotation = 0
 solution = []
 pool = None
-def solve(cube, max_move=23):
+def solve(cube, max_move=22):
     global solution
     global pool
     global rotation # declare global
@@ -121,7 +85,7 @@ if __name__ == "__main__":
     parser.add_argument("-nm", "--numeric_move", type=str, help="solve from a numerical scrmable")
     args = parser.parse_args()
 
-    max_move = 23
+    max_move = 22
     num_of_shuffles = 100
     num_of_solves = 1
     if args.number != None:

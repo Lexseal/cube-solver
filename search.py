@@ -2,7 +2,7 @@ import random
 from collections import deque
 import numpy as np
 import os.path
-from copy import copy
+from copy import copy, deepcopy
 import cube_model
 import move_coord
 import calc_move_table
@@ -44,13 +44,14 @@ def h2(state):
 def is_goal(state):
     return state[0] == 0 and state[1] == 0 and state[2] == 0
 
-def first_stage_search(state, stage1_min):
-    move_list1 = []
-    for max_depth in range(stage1_min, 13):
+def search(cube, max_move):
+    # state1 = [co_ori, eg_ori, ud_edges, last_move, depth]
+    state1 = move_coord.stage1_coord(cube) # init state
+    for max_depth in range(0, 13):
         state_stack = deque()
         move_stack = deque()
 
-        state_stack.append(state)
+        state_stack.append(state1)
         while len(state_stack) > 0:
             cur_state = state_stack.pop()
             cur_depth = cur_state[4] # get the depth of the state
@@ -62,9 +63,16 @@ def first_stage_search(state, stage1_min):
 
             if cur_depth == max_depth:
                 if is_goal(cur_state):
+                    # print("stage1 solved")
                     move_list1 = list(move_stack)[1:cur_depth+1]
-                    # print("stage1 victory", cur_depth+1)
-                    return move_list1
+                    tmp_cube = deepcopy(cube)
+                    for move in move_list1:
+                        tmp_cube.move(move)
+                    state2 = move_coord.stage2_coord(tmp_cube)
+                    state2[-2] = move_list1[-1] # we know the last move
+                    solved, move_list2 = second_stage_search(state2, max_move-max_depth)
+                    # print(move_list)
+                    if solved: return move_list1+move_list2
                 continue
             
             move_space = bytearray(cube_model.MoveSpace)
