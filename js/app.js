@@ -40,75 +40,91 @@ function createCube() {
     scene.add(cube);
 }
 
-function rotate(indices, point, axis, degree) {
-    for (var i = 0; i < indices.length; i++) {
-        cube.children[indices[i]].rotateAroundWorldAxis(point, axis, degree);
+async function rotate(center, sides, point, axis, degree) {
+    var moves_per_sec = 5;
+    var frames_per_move = 60/moves_per_sec;
+    var frame_time = 1/moves_per_sec/frames_per_move;
+    var increment = degree/frames_per_move;
+    for (var i = 1; i <= frames_per_move; i++) { // rotate 1 frame too much
+        cube.children[center].rotateAroundWorldAxis(point, axis, increment);
+        for (var j = 0; j < sides.length; j++) {
+            cube.children[sides[j]].rotateAroundWorldAxis(point, axis, increment);
+        }
+        await (new Promise(resolve => setTimeout(resolve, frame_time)));
     }
-    var length = indices.length;
+    console.log("done");
+    
+    var length = sides.length;
 
     //console.log(cube.children);
-    var tmp = cube.children[indices[length-1]];
+    var tmp = cube.children[sides[length-1]];
     for (var i = length-1; i >= 2; i-=2) {
-        //console.log(indices[i], cube.children[indices[i]])
-        //console.log(indices[i-2], cube.children[indices[i-2]])
-        cube.children[indices[i]] = cube.children[indices[i-2]];
+        //console.log(sides[i], cube.children[sides[i]])
+        //console.log(sides[i-2], cube.children[sides[i-2]])
+        cube.children[sides[i]] = cube.children[sides[i-2]];
     }
-    cube.children[indices[1]] = tmp;
+    cube.children[sides[1]] = tmp;
 
-    tmp = cube.children[indices[length-2]];
+    tmp = cube.children[sides[length-2]];
     for (var i = length-2; i >= 2; i-=2) {
-        cube.children[indices[i]] = cube.children[indices[i-2]];
+        cube.children[sides[i]] = cube.children[sides[i-2]];
     }
-    cube.children[indices[0]] = tmp;
+    cube.children[sides[0]] = tmp;
     //console.log(cube.children);
 }
 
-function U() {
+async function U() {
     var point = new THREE.Vector3(0, 0, 0);
     var axis = new THREE.Vector3(0, 1, 0);
     var degree = -Math.PI/2;
-    indices = [6, 15, 24, 25, 26, 17, 8, 7];
-    rotate(indices, point, axis, degree);
+    center = 16;
+    sides = [6, 15, 24, 25, 26, 17, 8, 7];
+    await rotate(center, sides, point, axis, degree);
 }
 
-function D() {
+async function D() {
     var point = new THREE.Vector3(0, 0, 0);
     var axis = new THREE.Vector3(0, 1, 0);
     var degree = Math.PI/2;
-    indices = [0, 1, 2, 11, 20, 19, 18, 9];
-    rotate(indices, point, axis, degree);
+    center = 10;
+    sides = [0, 1, 2, 11, 20, 19, 18, 9];
+    await rotate(center, sides, point, axis, degree);
 }
 
-function L() {
+async function L() {
     var point = new THREE.Vector3(0, 0, 0);
     var axis = new THREE.Vector3(1, 0, 0);
     var degree = Math.PI/2;
-    indices = [0, 3, 6, 7, 8, 5, 2, 1];
-    rotate(indices, point, axis, degree);
+    center = 4;
+    sides = [0, 3, 6, 7, 8, 5, 2, 1];
+    await rotate(center, sides, point, axis, degree);
 }
 
-function R() {
+async function R() {
     var point = new THREE.Vector3(0, 0, 0);
     var axis = new THREE.Vector3(1, 0, 0);
     var degree = -Math.PI/2;
-    indices = [18, 19, 20, 23, 26, 25, 24, 21];
-    rotate(indices, point, axis, degree);
+    center = 22;
+    sides = [18, 19, 20, 23, 26, 25, 24, 21];
+    await rotate(center, sides, point, axis, degree);
 }
 
-function F() {
+async function F() {
     var point = new THREE.Vector3(0, 0, 0);
     var axis = new THREE.Vector3(0, 0, 1);
     var degree = -Math.PI/2;
-    indices = [2, 5, 8, 17, 26, 23, 20, 11];
-    rotate(indices, point, axis, degree);
+    center = 14;
+    sides = [2, 5, 8, 17, 26, 23, 20, 11];
+    await rotate(center, sides, point, axis, degree);
 }
 
-function B() {
+async function B() {
     var point = new THREE.Vector3(0, 0, 0);
     var axis = new THREE.Vector3(0, 0, 1);
     var degree = Math.PI/2;
-    indices = [0, 9, 18, 21, 24, 15, 6, 3];
-    rotate(indices, point, axis, degree);
+    center = 12;
+    sides = [0, 9, 18, 21, 24, 15, 6, 3];
+    await rotate(center, sides, point, axis, degree);
 }
 
 function changeText(str) {
@@ -116,26 +132,26 @@ function changeText(str) {
     moveDisplay.innerHTML = str;
 }
 
-function move_by_num(move_num, logging=true) {
+async function move_by_num(move_num, logging=true) {
     switch(move_num) {
-        case 0: U(); break;
-        case 1: U(); U(); break;
-        case 2: U(); U(); U(); break;
-        case 3: L(); break;
-        case 4: L(); L(); break;
-        case 5: L(); L(); L(); break;
-        case 6: F(); break;
-        case 7: F(); F(); break;
-        case 8: F(); F(); F(); break;
-        case 9: R(); break;
-        case 10: R(); R(); break;
-        case 11: R(); R(); R(); break;
-        case 12: B(); break;
-        case 13: B(); B(); break;
-        case 14: B(); B(); B(); break;
-        case 15: D(); break;
-        case 16: D(); D(); break;
-        case 17: D(); D(); D(); break;
+        case 0: await U(); break;
+        case 1: await U(); await U(); break;
+        case 2: await U(); await U(); await U(); break;
+        case 3: await L(); break;
+        case 4: await L(); await L(); break;
+        case 5: await L(); await L(); await L(); break;
+        case 6: await F(); break;
+        case 7: await F(); await F(); break;
+        case 8: await F(); await F(); await F(); break;
+        case 9: await R(); break;
+        case 10: await R(); await R(); break;
+        case 11: await R(); await R(); await R(); break;
+        case 12: await B(); break;
+        case 13: await B(); await B(); break;
+        case 14: await B(); await B(); await B(); break;
+        case 15: await D(); break;
+        case 16: await D(); await D(); break;
+        case 17: await D(); await D(); await D(); break;
     }
     if (!logging) return; // stop right there if no logging required
     
@@ -144,24 +160,27 @@ function move_by_num(move_num, logging=true) {
     changeText("moves: " + move_str);
 }
 
-function onKeyDown(event) {
+still_rotating = false
+async function onKeyDown(event) {
+    if (still_rotating) return;
+    still_rotating = true;
     if (event.keyCode == 85) { // up
-        move_by_num(0);
+        await move_by_num(0);
         console.log("U");
     } else if (event.keyCode == 68) { // down
-        move_by_num(15);
+        await move_by_num(15);
         console.log("D");
     } else if (event.keyCode == 76) { // left
-        move_by_num(3);
+        await move_by_num(3);
         console.log("L");
     } else if (event.keyCode == 82) { // right
-        move_by_num(9);
+        await move_by_num(9);
         console.log("R");
     } else if (event.keyCode == 70) { // front
-        move_by_num(6);
+        await move_by_num(6);
         console.log("F");
     } else if (event.keyCode == 66) { // back
-        move_by_num(12);
+        await move_by_num(12);
         console.log("B");
     } else if (event.keyCode == 37) { // y-- 
         cube.rotation.y -= 0.1;
@@ -172,6 +191,7 @@ function onKeyDown(event) {
     } else if (event.keyCode == 40) { // x++ 
         cube.rotation.x += 0.1;
     }
+    still_rotating = false;
 }
 
 function onMouseMove(event) {
@@ -193,18 +213,20 @@ function windowResize() {
     camera.updateProjectionMatrix();
 }
 
-function shuffleRequest() {
+async function shuffleRequest() {
     for (var i = 0; i < 20; i++) {
         var move_num = Math.floor(Math.random()*18);
-        move_by_num(move_num);
+        await move_by_num(move_num);
     }
 }
 
-function move_solution(solution) {
+async function move_solution(solution) {
     changeText("solution: " + solution);
     var move_list = solution.split(",");
     console.log(move_list);
-    move_list.forEach(move => move_by_num(parseInt(move), false));
+    for (var i = 0; i < move_list.length; i++) {
+        await move_by_num(parseInt(move_list[i]), false)
+    }
 }
 
 function solveRequest() {
