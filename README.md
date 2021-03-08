@@ -2,14 +2,16 @@
 
 A program that solves the 3x3 rubik's cube
 
+## For demo
+
+https://lexseal.github.io/cube-solver/
+
 ![cube_demo](cube_demo.gif)
 
 ## How to run
 
-For demo, run
-
 ```python3
-python3 server.py
+python3 solver.py [-h] [-s STR] [-m MOVES] [-d] [-n NUMBER] [-c] [-nm NUMERIC_MOVE]
 ```
 
 ## Implementation
