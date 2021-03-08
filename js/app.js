@@ -239,14 +239,16 @@ function solveRequest() {
     if (still_solving || still_shuffling) return;
     changeText("contacting server...")
     still_solving = true
-    url = "http://192.155.82.223:8000/solve" + move_str;
+    url = "https://cors-anywhere.herokuapp.com/http://192.155.82.223:8080/solve" + move_str;
     console.log(url);
     fetch(url)
     .then(response => response.text())
     .then(move_solution)
-    .then(() => still_solving = false);
-    //.catch(console.log("something went wrong"))
-    move_str = "";
+    .then(() => {
+        still_solving = false;
+        move_str = "";
+    })
+    .catch(console.log("server err"));
 }
 
 async function move_solution(solution) {
