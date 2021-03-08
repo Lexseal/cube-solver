@@ -42,12 +42,14 @@ function createCube() {
 
 let moves_per_sec = 5;
 let fps = 100;
-let frame_time = 1/fps;
+let frame_time = 1000/fps;
 async function rotate(center, sides, point, axis, degree) {
     let frames_per_move = fps/moves_per_sec;
     let increment = degree/frames_per_move;
+    let milli_per_move = 1000/moves_per_sec;
     let total_rot = 0;
-    while (Math.abs(total_rot) < Math.abs(degree)) {
+    let start = Date.now();
+    while (Date.now() < start+milli_per_move) {
         cube.children[center].rotateAroundWorldAxis(point, axis, increment);
         for (let j = 0; j < sides.length; j++) {
             cube.children[sides[j]].rotateAroundWorldAxis(point, axis, increment);
@@ -60,6 +62,7 @@ async function rotate(center, sides, point, axis, degree) {
     for (let j = 0; j < sides.length; j++) {
         cube.children[sides[j]].rotateAroundWorldAxis(point, axis, degree-total_rot);
     } // fix over rotation
+    console.log(Date.now()-start);
 
     // console.log("done");
     
@@ -239,7 +242,7 @@ function solveRequest() {
     if (still_solving || still_shuffling) return;
     changeText("contacting server...")
     still_solving = true
-    url = "https://cors-anywhere.herokuapp.com/http://192.155.82.223:8080/solve" + move_str;
+    url = "https://cube-cors-proxy.herokuapp.com/http://192.155.82.223:8080/solve" + move_str;
     console.log(url);
     fetch(url)
     .then(response => response.text())
