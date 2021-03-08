@@ -1,5 +1,5 @@
 THREE.Object3D.prototype.rotateAroundWorldAxis = function() {
-    var q = new THREE.Quaternion();
+    let q = new THREE.Quaternion();
     return function rotateAroundWorldAxis( point, axis, angle ) {
         q.setFromAxisAngle( axis, angle );
 
@@ -14,11 +14,11 @@ THREE.Object3D.prototype.rotateAroundWorldAxis = function() {
 }(); // patch for rotation around a point in space
 
 function createCube() {
-    for (var i = -1; i < 2; i++) {
-        for (var j = -1; j < 2; j++) {
-            for (var k = -1; k < 2; k++) {
-                var geometry = new THREE.CubeGeometry(0.97, 0.97, 0.97);
-                var material = new THREE.MeshBasicMaterial({color:0xffffff, vertexColors: true});
+    for (let i = -1; i < 2; i++) {
+        for (let j = -1; j < 2; j++) {
+            for (let k = -1; k < 2; k++) {
+                let geometry = new THREE.CubeGeometry(0.97, 0.97, 0.97);
+                let material = new THREE.MeshBasicMaterial({color:0xffffff, vertexColors: true});
                 geometry.faces[0].color.setHex(0x33FF57);
                 geometry.faces[1].color.setHex(0x33FF57);
                 geometry.faces[2].color.setHex(0x336DFF);
@@ -31,7 +31,7 @@ function createCube() {
                 geometry.faces[9].color.setHex(0xEEEEEE);
                 geometry.faces[10].color.setHex(0xF9FF33);
                 geometry.faces[11].color.setHex(0xF9FF33);
-                var cubbie = new THREE.Mesh(geometry, material);
+                let cubbie = new THREE.Mesh(geometry, material);
                 cubbie.position.set(i, j, k);
                 cube.add(cubbie);
             }
@@ -40,25 +40,34 @@ function createCube() {
     scene.add(cube);
 }
 
+let moves_per_sec = 5;
+let fps = 100;
+let frame_time = 1/fps;
 async function rotate(center, sides, point, axis, degree) {
-    var moves_per_sec = 5;
-    var frames_per_move = 60/moves_per_sec;
-    var frame_time = 1/moves_per_sec/frames_per_move;
-    var increment = degree/frames_per_move;
-    for (var i = 1; i <= frames_per_move; i++) { // rotate 1 frame too much
+    let frames_per_move = fps/moves_per_sec;
+    let increment = degree/frames_per_move;
+    let total_rot = 0;
+    while (Math.abs(total_rot) < Math.abs(degree)) {
         cube.children[center].rotateAroundWorldAxis(point, axis, increment);
-        for (var j = 0; j < sides.length; j++) {
+        for (let j = 0; j < sides.length; j++) {
             cube.children[sides[j]].rotateAroundWorldAxis(point, axis, increment);
         }
+        total_rot += increment;
         await (new Promise(resolve => setTimeout(resolve, frame_time)));
     }
-    console.log("done");
+
+    cube.children[center].rotateAroundWorldAxis(point, axis, degree-total_rot);
+    for (let j = 0; j < sides.length; j++) {
+        cube.children[sides[j]].rotateAroundWorldAxis(point, axis, degree-total_rot);
+    } // fix over rotation
+
+    // console.log("done");
     
-    var length = sides.length;
+    let length = sides.length;
 
     //console.log(cube.children);
-    var tmp = cube.children[sides[length-1]];
-    for (var i = length-1; i >= 2; i-=2) {
+    let tmp = cube.children[sides[length-1]];
+    for (let i = length-1; i >= 2; i-=2) {
         //console.log(sides[i], cube.children[sides[i]])
         //console.log(sides[i-2], cube.children[sides[i-2]])
         cube.children[sides[i]] = cube.children[sides[i-2]];
@@ -66,7 +75,7 @@ async function rotate(center, sides, point, axis, degree) {
     cube.children[sides[1]] = tmp;
 
     tmp = cube.children[sides[length-2]];
-    for (var i = length-2; i >= 2; i-=2) {
+    for (let i = length-2; i >= 2; i-=2) {
         cube.children[sides[i]] = cube.children[sides[i-2]];
     }
     cube.children[sides[0]] = tmp;
@@ -74,61 +83,61 @@ async function rotate(center, sides, point, axis, degree) {
 }
 
 async function U() {
-    var point = new THREE.Vector3(0, 0, 0);
-    var axis = new THREE.Vector3(0, 1, 0);
-    var degree = -Math.PI/2;
+    let point = new THREE.Vector3(0, 0, 0);
+    let axis = new THREE.Vector3(0, 1, 0);
+    let degree = -Math.PI/2;
     center = 16;
     sides = [6, 15, 24, 25, 26, 17, 8, 7];
     await rotate(center, sides, point, axis, degree);
 }
 
 async function D() {
-    var point = new THREE.Vector3(0, 0, 0);
-    var axis = new THREE.Vector3(0, 1, 0);
-    var degree = Math.PI/2;
+    let point = new THREE.Vector3(0, 0, 0);
+    let axis = new THREE.Vector3(0, 1, 0);
+    let degree = Math.PI/2;
     center = 10;
     sides = [0, 1, 2, 11, 20, 19, 18, 9];
     await rotate(center, sides, point, axis, degree);
 }
 
 async function L() {
-    var point = new THREE.Vector3(0, 0, 0);
-    var axis = new THREE.Vector3(1, 0, 0);
-    var degree = Math.PI/2;
+    let point = new THREE.Vector3(0, 0, 0);
+    let axis = new THREE.Vector3(1, 0, 0);
+    let degree = Math.PI/2;
     center = 4;
     sides = [0, 3, 6, 7, 8, 5, 2, 1];
     await rotate(center, sides, point, axis, degree);
 }
 
 async function R() {
-    var point = new THREE.Vector3(0, 0, 0);
-    var axis = new THREE.Vector3(1, 0, 0);
-    var degree = -Math.PI/2;
+    let point = new THREE.Vector3(0, 0, 0);
+    let axis = new THREE.Vector3(1, 0, 0);
+    let degree = -Math.PI/2;
     center = 22;
     sides = [18, 19, 20, 23, 26, 25, 24, 21];
     await rotate(center, sides, point, axis, degree);
 }
 
 async function F() {
-    var point = new THREE.Vector3(0, 0, 0);
-    var axis = new THREE.Vector3(0, 0, 1);
-    var degree = -Math.PI/2;
+    let point = new THREE.Vector3(0, 0, 0);
+    let axis = new THREE.Vector3(0, 0, 1);
+    let degree = -Math.PI/2;
     center = 14;
     sides = [2, 5, 8, 17, 26, 23, 20, 11];
     await rotate(center, sides, point, axis, degree);
 }
 
 async function B() {
-    var point = new THREE.Vector3(0, 0, 0);
-    var axis = new THREE.Vector3(0, 0, 1);
-    var degree = Math.PI/2;
+    let point = new THREE.Vector3(0, 0, 0);
+    let axis = new THREE.Vector3(0, 0, 1);
+    let degree = Math.PI/2;
     center = 12;
     sides = [0, 9, 18, 21, 24, 15, 6, 3];
     await rotate(center, sides, point, axis, degree);
 }
 
 function changeText(str) {
-    var moveDisplay = document.querySelector("nav>ul>span");
+    let moveDisplay = document.querySelector("nav>p");
     moveDisplay.innerHTML = str;
 }
 
@@ -196,10 +205,11 @@ async function onKeyDown(event) {
 
 function onMouseMove(event) {
     if (!downFlag) return; // nothing to do
-    var cur_x = event.offsetX;
-    var cur_y = event.offsetY; // get new coordinates
-    var dx = cur_x-last_x;
-    var dy = cur_y-last_y; // calculate change
+    if (event.target.id === "myRange") return;
+    let cur_x = event.offsetX;
+    let cur_y = event.offsetY; // get new coordinates
+    let dx = cur_x-last_x;
+    let dy = cur_y-last_y; // calculate change
     last_x = cur_x;
     last_y = cur_y; // reset last coordinates
 
@@ -213,30 +223,38 @@ function windowResize() {
     camera.updateProjectionMatrix();
 }
 
+let still_solving = false;
+let still_shuffling = false;
 async function shuffleRequest() {
-    for (var i = 0; i < 20; i++) {
-        var move_num = Math.floor(Math.random()*18);
+    if (still_shuffling || still_solving) return;
+    still_shuffling = true;
+    for (let i = 0; i < 20; i++) {
+        let move_num = Math.floor(Math.random()*18);
         await move_by_num(move_num);
     }
-}
-
-async function move_solution(solution) {
-    changeText("solution: " + solution);
-    var move_list = solution.split(",");
-    console.log(move_list);
-    for (var i = 0; i < move_list.length; i++) {
-        await move_by_num(parseInt(move_list[i]), false)
-    }
+    still_shuffling = false;
 }
 
 function solveRequest() {
-    url = "http://localhost:8000/solve" + move_str;
+    if (still_solving || still_shuffling) return;
+    still_solving = true
+    url = "http://localhost:8080/solve" + move_str;
     console.log(url);
     fetch(url)
     .then(response => response.text())
     .then(move_solution)
+    .then(() => still_solving = false);
     //.catch(console.log("something went wrong"))
     move_str = "";
+}
+
+async function move_solution(solution) {
+    changeText("solution: " + solution);
+    let move_list = solution.split(",");
+    // console.log(move_list);
+    for (let i = 0; i < move_list.length; i++) {
+        await move_by_num(parseInt(move_list[i]), false)
+    }
 }
 
 function animate() {
@@ -244,24 +262,29 @@ function animate() {
 	renderer.render(scene, camera);
 }
 
-var scene = new THREE.Scene();
-var nav = document.getElementById("navbar");
-var navHeight = nav.offsetHeight;
-var camera = new THREE.PerspectiveCamera( 70, window.innerWidth / (window.innerHeight-2*navHeight), 1, 1000 );
+let scene = new THREE.Scene();
+let nav = document.getElementById("navbar");
+let navHeight = nav.offsetHeight;
+let camera = new THREE.PerspectiveCamera( 70, window.innerWidth / (window.innerHeight-2*navHeight), 1, 1000 );
 camera.position.z = 5;
 
-var renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+let renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
 renderer.setSize( window.innerWidth, (window.innerHeight-2*navHeight) );
 document.body.appendChild( renderer.domElement );
 
-var move_str = ""
-var shuffleBtn = document.getElementById("shuffleBtn");
-shuffleBtn.addEventListener("click", shuffleRequest);
-var solveBtn = document.getElementById("solveBtn");
-solveBtn.addEventListener("click", solveRequest);
+let move_str = ""
+document.getElementById("shuffleBtn").addEventListener("click", shuffleRequest);
+document.getElementById("solveBtn").addEventListener("click", solveRequest);
 
-var downFlag = false;
-var last_x, last_y;
+document.getElementById("myRange").value = moves_per_sec;
+document.getElementById("mps").innerHTML = moves_per_sec;
+document.getElementById("myRange").addEventListener("input", (e) => {
+    moves_per_sec = e.target.value;
+    document.getElementById("mps").innerHTML = moves_per_sec;
+});
+
+let downFlag = false;
+let last_x, last_y;
 document.addEventListener("mousedown", event => {
     downFlag = true;
     last_x = event.offsetX;
@@ -277,6 +300,6 @@ document.addEventListener("wheel", event => {
 })
 window.addEventListener('resize', windowResize);
 
-var cube = new THREE.Group(); // make a container for cube
+let cube = new THREE.Group(); // make a container for cube
 createCube(); // add all pieces to the cube
 animate();
