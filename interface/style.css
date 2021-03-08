@@ -3,11 +3,13 @@
     padding: 0px;
 }
 
-ul > * {
-    margin-left: 20px;
-    margin-right: 20px;
+#navbar {
+    margin: 10px;
 }
 
-#navbar {
+#navbar > * {
+    margin-left: 5px;
+    margin-right: 5px;
     margin-top: 10px;
+    margin-bottom: 10px;
 }

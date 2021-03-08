@@ -4,8 +4,9 @@ import os
 import webbrowser
 from move_coord import cube_from_scramble
 import solver
+import time
 
-PORT = 8000
+PORT = 8080
  
 class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
     def set_headers(self):
@@ -23,11 +24,9 @@ class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
             init_cube = cube_from_scramble(num_move, numeric_scramble=True)
             solution = solver.solve(init_cube)
             solution = ",".join(map(str, solution))
-            self.wfile.write(solution.encode())    
+            self.wfile.write(solution.encode())
 
-Handler = MyHttpRequestHandler
- 
-with socketserver.TCPServer(("", PORT), Handler) as httpd:
-    print("Http Server Serving at port", PORT)
-    webbrowser.open_new_tab("interface/index.html")
+with socketserver.TCPServer(("", PORT), MyHttpRequestHandler) as httpd:
+    print("http at port", PORT)
+    # webbrowser.open_new_tab("interface/index.html")
     httpd.serve_forever()
