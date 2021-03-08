@@ -4,7 +4,6 @@ import os
 import webbrowser
 from move_coord import cube_from_scramble
 import solver
-import time
 
 PORT = 8080
  
