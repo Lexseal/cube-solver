@@ -237,8 +237,9 @@ async function shuffleRequest() {
 
 function solveRequest() {
     if (still_solving || still_shuffling) return;
+    changeText("contacting server...")
     still_solving = true
-    url = "http://localhost:8080/solve" + move_str;
+    url = "http://192.155.82.223:8000/solve" + move_str;
     console.log(url);
     fetch(url)
     .then(response => response.text())
